@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug ASAN|x64">
+      <Configuration>Debug ASAN</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{6a9082f6-6a49-46cf-ad2b-d4021fa2cc34}</ProjectGuid>
+    <RootNamespace>Tera</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug ASAN|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>true</EnableASAN>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug ASAN|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)Build\$(Configuration)\Libs\</OutDir>
+    <IntDir>$(SolutionDir)Build\$(Configuration)\Objs\$(TargetName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug ASAN|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)Build\$(Configuration)\Libs\</OutDir>
+    <IntDir>$(SolutionDir)Build\$(Configuration)\Objs\$(TargetName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)Build\$(Configuration)\Libs\</OutDir>
+    <IntDir>$(SolutionDir)Build\$(Configuration)\Objs\$(TargetName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include;$(NVTTWIN)\include;$(GLEWWIN)\include;$(LZOPRO)\include;$(OGGWIN)\include;$(VORBISWIN)\include;$(NVTRISTRIP)\include;$(FREEIMAGEWIN)\include;$(ZYDIS)\include;$(FBXWIN)\include;$(OPENAL)\include;$(PUGIXMLWIN)\include;$(RAPIDJSONWIN)\include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug ASAN|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include;$(NVTTWIN)\include;$(GLEWWIN)\include;$(LZOPRO)\include;$(OGGWIN)\include;$(VORBISWIN)\include;$(NVTRISTRIP)\include;$(FREEIMAGEWIN)\include;$(ZYDIS)\include;$(FBXWIN)\include;$(OPENAL)\include;$(PUGIXMLWIN)\include;$(RAPIDJSONWIN)\include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include;$(NVTTWIN)\include;$(GLEWWIN)\include;$(LZOPRO)\include;$(OGGWIN)\include;$(VORBISWIN)\include;$(NVTRISTRIP)\include;$(FREEIMAGEWIN)\include;$(ZYDIS)\include;$(FBXWIN)\include;$(OPENAL)\include;$(PUGIXMLWIN)\include;$(RAPIDJSONWIN)\include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\Tera\Cast.h" />
+    <ClInclude Include="Include\Tera\Core.h" />
+    <ClInclude Include="Include\Tera\CoreCompression.h" />
+    <ClInclude Include="Include\Tera\CoreDebug.h" />
+    <ClInclude Include="Include\Tera\CoreMath.h" />
+    <ClInclude Include="Include\Tera\CoreStrings.h" />
+    <ClInclude Include="Include\Tera\CoreTypes.h" />
+    <ClInclude Include="Include\Tera\CoreVersion.h" />
+    <ClInclude Include="Include\Tera\DC.h" />
+    <ClInclude Include="Include\Tera\FFlags.h" />
+    <ClInclude Include="Include\Tera\FMapper.h" />
+    <ClInclude Include="Include\Tera\FMeshCommon.h" />
+    <ClInclude Include="Include\Tera\FName.h" />
+    <ClInclude Include="Include\Tera\FObjectArray.h" />
+    <ClInclude Include="Include\Tera\FObjectResource.h" />
+    <ClInclude Include="Include\Tera\FPackage.h" />
+    <ClInclude Include="Include\Tera\FPropertyTag.h" />
+    <ClInclude Include="Include\Tera\FStream.h" />
+    <ClInclude Include="Include\Tera\FString.h" />
+    <ClInclude Include="Include\Tera\FStructs.h" />
+    <ClInclude Include="Include\Tera\kDOP.h" />
+    <ClInclude Include="Include\Tera\UActor.h" />
+    <ClInclude Include="Include\Tera\UActorComponent.h" />
+    <ClInclude Include="Include\Tera\UAnimation.h" />
+    <ClInclude Include="Include\Tera\UClass.h" />
+    <ClInclude Include="Include\Tera\UComponent.h" />
+    <ClInclude Include="Include\Tera\ULevel.h" />
+    <ClInclude Include="Include\Tera\ULevelStreaming.h" />
+    <ClInclude Include="Include\Tera\ULight.h" />
+    <ClInclude Include="Include\Tera\ULightMap.h" />
+    <ClInclude Include="Include\Tera\UMaterial.h" />
+    <ClInclude Include="Include\Tera\UMaterialExpression.h" />
+    <ClInclude Include="Include\Tera\UMetaData.h" />
+    <ClInclude Include="Include\Tera\UModel.h" />
+    <ClInclude Include="Include\Tera\UNames.h" />
+    <ClInclude Include="Include\Tera\UObject.h" />
+    <ClInclude Include="Include\Tera\UObjectHelpers.h" />
+    <ClInclude Include="Include\Tera\UObjectRedirector.h" />
+    <ClInclude Include="Include\Tera\UObjectReferencer.h" />
+    <ClInclude Include="Include\Tera\UPersistentCookerData.h" />
+    <ClInclude Include="Include\Tera\UPhysAsset.h" />
+    <ClInclude Include="Include\Tera\UPrefab.h" />
+    <ClInclude Include="Include\Tera\UProperty.h" />
+    <ClInclude Include="Include\Tera\USkeletalMesh.h" />
+    <ClInclude Include="Include\Tera\USoundNode.h" />
+    <ClInclude Include="Include\Tera\USpeedTree.h" />
+    <ClInclude Include="Include\Tera\UStaticMesh.h" />
+    <ClInclude Include="Include\Tera\UTerrain.h" />
+    <ClInclude Include="Include\Tera\UTexture.h" />
+    <ClInclude Include="Include\Tera\Utils\ALDevice.h" />
+    <ClInclude Include="Include\Tera\Utils\MeshUtils.h" />
+    <ClInclude Include="Include\Tera\Utils\T3DUtils.h" />
+    <ClInclude Include="Include\Tera\UVolumes.h" />
+    <ClInclude Include="Include\Tera\Utils\ALog.h" />
+    <ClInclude Include="Include\Tera\Utils\APerfSamples.h" />
+    <ClInclude Include="Include\Tera\Utils\DCKeyTool.h" />
+    <ClInclude Include="Private\DCKeyToolImp.h" />
+    <ClInclude Include="Include\Tera\Utils\TextureUtils.h" />
+    <ClInclude Include="Private\DCImpl.h" />
+    <ClInclude Include="Private\FbxMeshUtils.h" />
+    <ClInclude Include="Private\PskMeshUtils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Src\ALDevice.cpp" />
+    <ClCompile Include="Src\ALog.cpp" />
+    <ClCompile Include="Src\Core.cpp" />
+    <ClCompile Include="Src\DC.cpp" />
+    <ClCompile Include="Src\DCKeyTool.cpp" />
+    <ClCompile Include="Src\FbxMeshUtils.cpp" />
+    <ClCompile Include="Src\FMapper.cpp" />
+    <ClCompile Include="Src\FMeshCommon.cpp" />
+    <ClCompile Include="Src\FName.cpp" />
+    <ClCompile Include="Src\FObjectResource.cpp" />
+    <ClCompile Include="Src\FPackage.cpp" />
+    <ClCompile Include="Src\FPropertyTag.cpp" />
+    <ClCompile Include="Src\FStream.cpp" />
+    <ClCompile Include="Src\FString.cpp" />
+    <ClCompile Include="Src\FStructs.cpp" />
+    <ClCompile Include="Src\MeshUtils.cpp" />
+    <ClCompile Include="Src\PskMeshUtils.cpp" />
+    <ClCompile Include="Src\TextureProcessor.cpp" />
+    <ClCompile Include="Src\TfcBuilder.cpp" />
+    <ClCompile Include="Src\UActor.cpp" />
+    <ClCompile Include="Src\UActorComponent.cpp" />
+    <ClCompile Include="Src\UAnimation.cpp" />
+    <ClCompile Include="Src\UClass.cpp" />
+    <ClCompile Include="Src\UComponent.cpp" />
+    <ClCompile Include="Src\ULevel.cpp" />
+    <ClCompile Include="Src\ULevelStreaming.cpp" />
+    <ClCompile Include="Src\ULight.cpp" />
+    <ClCompile Include="Src\ULightMap.cpp" />
+    <ClCompile Include="Src\UMaterial.cpp" />
+    <ClCompile Include="Src\UMaterialExpression.cpp" />
+    <ClCompile Include="Src\UMetaData.cpp" />
+    <ClCompile Include="Src\UModel.cpp" />
+    <ClCompile Include="Src\UNames.cpp" />
+    <ClCompile Include="Src\UObject.cpp" />
+    <ClCompile Include="Src\UObjectFactory.cpp" />
+    <ClCompile Include="Src\UObjectRedirector.cpp" />
+    <ClCompile Include="Src\UObjectReferencer.cpp" />
+    <ClCompile Include="Src\UPersistentCookerData.cpp" />
+    <ClCompile Include="Src\UPhysAsset.cpp" />
+    <ClCompile Include="Src\UPrefab.cpp" />
+    <ClCompile Include="Src\UProperty.cpp" />
+    <ClCompile Include="Src\USkeletalMesh.cpp" />
+    <ClCompile Include="Src\USoundNode.cpp" />
+    <ClCompile Include="Src\USpeedTree.cpp" />
+    <ClCompile Include="Src\UStaticMesh.cpp" />
+    <ClCompile Include="Src\UTerrain.cpp" />
+    <ClCompile Include="Src\UTexture.cpp" />
+    <ClCompile Include="Src\UVolumes.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
