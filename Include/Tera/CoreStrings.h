@@ -27,3 +27,5 @@ std::string Sprintf(const char* fmt, va_list ap);
 std::string Sprintf(const wchar* fmt, va_list ap);
 std::wstring Sprintf(const wchar* fmt, ...);
 std::string Sprintf(const std::string fmt, ...);
+
+std::string ToUpper(const std::string& data);

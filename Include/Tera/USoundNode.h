@@ -2,7 +2,7 @@
 #include <Tera/UObject.h>
 #include <Tera/UActor.h>
 #include <Tera/UActorComponent.h>
-
+#if ALAUDIO_DEVICE
 class SoundTravaller {
 public:
   ~SoundTravaller()
@@ -44,6 +44,7 @@ private:
   FILE_OFFSET DataSize = 0;
   FILE_OFFSET DataOffset = 0;
 };
+#endif
 
 class USoundNode : public UObject {
 public:
@@ -245,9 +246,9 @@ public:
   {
     free(ResourceData);
   }
-
+#if ALAUDIO_DEVICE
   friend bool SoundTravaller::Visit(USoundNodeWave* wave);
-
+#endif
 protected:
   FByteBulkData EditorData;
   FByteBulkData PCData;

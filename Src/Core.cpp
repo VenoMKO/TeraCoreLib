@@ -55,6 +55,8 @@
 
 #include <Tera/Utils/ALog.h>
 
+const char* FN_MOD_PREFIX = "MOD:";
+
 FString GetLzoError(int err)
 {
   switch (err)
@@ -1182,11 +1184,11 @@ bool HasAVX2()
   return result;
 }
 
-#ifdef ENABLE_DUMPDATA
-void DumpData(void* data, int size, const char* path)
+std::string ToUpper(const std::string& data)
 {
-  std::string p = std::string(DUMP_PATH) + "\\" + path;
-  std::ofstream s(p, std::ios::out | std::ios::binary);
-  s.write((const char*)data, size);
+  std::string result = data;
+  std::for_each(result.begin(), result.end(), [](char& c) {
+    c = ::toupper(c);
+  });
+  return result;
 }
-#endif

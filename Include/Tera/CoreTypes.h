@@ -31,6 +31,8 @@ enum { MSP_MAX = 1 };
 
 #define PACKAGE_MAGIC 0x9E2A83C1
 
+extern const char* FN_MOD_PREFIX;
+
 #include <string>
 // Use std::vector instead of TArray
 #include <vector>

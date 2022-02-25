@@ -10,16 +10,6 @@
 #endif
 #endif
 
-// Allows to dump GPKs
-// DUMP_PATH - directory to save dumps to. Should be set in the ENV
-#if _DEBUG && defined(DUMP_PATH)
-#define ENABLE_DUMPDATA
-#define DUMP_OBJECTS 0
-#define DUMP_PACKAGES 0
-#define DUMP_MAPPERS 0
-void DumpData(void* data, int size, const char* path);
-#endif
-
 // Programmable breakpoints
 #if _DEBUG
 #include <intrin.h>

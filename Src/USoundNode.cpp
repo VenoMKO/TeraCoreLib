@@ -6,6 +6,7 @@
 
 #include <vorbis/vorbisfile.h>
 
+#if ALAUDIO_DEVICE
 static size_t OggRead(void* ptr, size_t size, size_t nmemb, void* datasource)
 {
   SoundTravaller* travaller = (SoundTravaller*)datasource;
@@ -28,6 +29,7 @@ static long OggTell(void* datasource)
   SoundTravaller* travaller = (SoundTravaller*)datasource;
   return travaller->TellOgg();
 }
+#endif
 
 int32 ExportSoundCueNodeRecursive(FString& cueString, USoundNode* node, int32& index, bool loop, float scale)
 {
@@ -1121,6 +1123,7 @@ bool UAmbientSoundSimpleToggleable::RegisterProperty(FPropertyTag* property)
   return false;
 }
 
+#if ALAUDIO_DEVICE
 bool SoundTravaller::Visit(USoundNodeWave* wave)
 {
   if (!wave)
@@ -1236,3 +1239,4 @@ bool SoundTravaller::GetOggInfo(FSoundInfo& info)
   Error = "Not a valid OGG file!";
   return false;
 }
+#endif

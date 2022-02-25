@@ -2505,6 +2505,7 @@ struct FCompositeMeta {
   FString Name;
   FString Author;
   FString Container;
+  FString Description;
 
   int32 LegacyRegionLock = 0;
   FILE_OFFSET LegacyHeaderSize = 0;

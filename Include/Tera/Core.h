@@ -74,19 +74,29 @@
 // --------------------------------------------------------------------
 
 // Enable DC key tool
+#ifndef DC_KEY_TOOL
 #define DC_KEY_TOOL 1
+#endif
 
 // Enable MeshUtils
+#ifndef MESH_UTILS
 #define MESH_UTILS 1
+#endif
 
 // Enable T3DUtils
+#ifndef T3D_UTILS
 #define T3D_UTILS 1
+#endif
 
 // Enable TextureUtils
+#ifndef TEXTURE_UTILS
 #define TEXTURE_UTILS 1
+#endif
 
 // Enable OpenAL Device
+#ifndef ALAUDIO_DEVICE
 #define ALAUDIO_DEVICE 1
+#endif
 
 #include <Tera/CoreDebug.h>
 #include <Tera/CoreTypes.h>

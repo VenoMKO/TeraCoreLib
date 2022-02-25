@@ -1162,6 +1162,7 @@ FColor FLinearColor::ToFColor(bool sRGB) const
 
 void FRawIndexBuffer::SortIndices()
 {
+#if MESH_UTILS
   PrimitiveGroup* PrimitiveGroups = nullptr;
   uint32 NumPrimitiveGroups = 0;
   bool isInt = ElementSize == sizeof(uint32);
@@ -1199,6 +1200,7 @@ void FRawIndexBuffer::SortIndices()
     }
     delete[] PrimitiveGroups;
   }
+#endif
 }
 
 FQuatRotationTranslationMatrix::FQuatRotationTranslationMatrix(const FQuat& qIn, const FVector& origin)
@@ -1504,7 +1506,7 @@ void FCompositeMeta::SerializeLegacy(FStream& s)
         LogE(exp.what());
         continue;
       }
-      if (sum.FolderName.StartWith("MOD:"))
+      if (sum.FolderName.StartsWith(FN_MOD_PREFIX))
       {
         pkg.ObjectPath = sum.FolderName.Substr(4);
       }
