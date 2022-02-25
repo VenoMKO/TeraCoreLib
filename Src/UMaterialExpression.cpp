@@ -529,7 +529,7 @@ bool UMaterialExpression::RegisterProperty(FPropertyTag* property)
 FString UMaterialExpression::GetTitle() const
 {
   FString title = GetClassNameString();
-  if (title.StartWith(UMaterialExpression::StaticClassName()))
+  if (title.StartsWith(UMaterialExpression::StaticClassName()))
   {
     title = title.Substr(strlen(UMaterialExpression::StaticClassName()));
     if (title.Empty())

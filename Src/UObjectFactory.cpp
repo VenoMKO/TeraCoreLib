@@ -521,14 +521,14 @@ UObject* UObject::Object(FObjectExport* exp)
   
   // A fallback for unimplemented classes
   // MaterialExpressions must be before the UComponent due to UMaterialExpressionComponentMask
-  if (c.StartWith("MaterialExpression"))
+  if (c.StartsWith("MaterialExpression"))
   {
     return UMaterialExpression::StaticFactory(exp);
   }
   // Fallback for unimplemented components. *Component => UComponent
   if ((c.Find(UComponent::StaticClassName()) != std::string::npos) ||
       (c.Find("Distribution") != std::string::npos) ||
-       c.StartWith("UIComp_") || c == "RB_Handle")
+       c.StartsWith("UIComp_") || c == "RB_Handle")
   {
     return new UComponent(exp);
   }

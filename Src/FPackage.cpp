@@ -275,7 +275,7 @@ bool FPackage::CreateCompositeMod(CompositeModContext& ctx)
     if (path.FileExtension().ToUpper() == "TFC")
     {
       FString fname = path.Filename();
-      if (!fname.StartWith(NAME_WorldTextures) || fname.Size() < strlen(NAME_WorldTextures) + 3)
+      if (!fname.StartsWith(NAME_WorldTextures) || fname.Size() < strlen(NAME_WorldTextures) + 3)
       {
         ctx.Error = FString::Sprintf("Incorrect TFC name: %s!", path.Filename().UTF8().c_str());
         return false;
@@ -319,7 +319,7 @@ bool FPackage::CreateCompositeMod(CompositeModContext& ctx)
       ctx.Error = FString::Sprintf("Failed to read package %s.", path.Filename().C_str());
       return false;
     }
-    if (!sum.FolderName.StartWith("MOD:"))
+    if (!sum.FolderName.StartsWith(FN_MOD_PREFIX))
     {
       ctx.Error = FString::Sprintf("Package %s has no composite info! Try to resave it from the original.", sum.PackageName.C_str());
       return false;
@@ -1007,7 +1007,7 @@ std::shared_ptr<FPackage> FPackage::GetPackage(const FString& path)
       }
     }
   }
-  if (path.StartWith(RootDir))
+  if (path.StartsWith(RootDir))
   {
     LogI("Opening package: %s", path.Substr(RootDir.Size()).String().c_str());
   }
@@ -1389,7 +1389,7 @@ std::shared_ptr<FPackage> FPackage::CreateModDescriptor(const FString& name, con
   FPackageSummary summary;
   int32 tmm_ver_major = 0, tmm_ver_minor = 0;
   GetTargetTmmVersion(tmm_ver_major, tmm_ver_minor);
-  summary.FolderName = FString::Sprintf("MOD:TMM version %d.%02d", tmm_ver_major, tmm_ver_minor);
+  summary.FolderName = FString::Sprintf("%sTMM version %d.%02d", FN_MOD_PREFIX, tmm_ver_major, tmm_ver_minor);
   summary.FolderName.Terminate();
   summary.Guid = FGuid::Generate();
   summary.SetFileVersion(VER_TERA_MODERN, 17);
@@ -1696,7 +1696,9 @@ bool FPackage::Save(PackageSaveContext& context)
     if (map.count(packageName))
     {
       const FCompositePackageMapEntry& entry = map.at(packageName);
-      SetFolderName("MOD:" + entry.ObjectPath);
+      FString folderName = FN_MOD_PREFIX;
+      folderName += entry.ObjectPath;
+      SetFolderName(folderName);
     }
   }
 

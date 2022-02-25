@@ -862,7 +862,7 @@ UObject* MTransStream::FindDestinationObject(UObject* obj) const
   const FString testClass = obj->GetClassNameString();
   for (FObjectExport* exp : exports)
   {
-    if ((exp->GetObjectNameString().ToUpper().StartWith(testName) || testName.StartWith(exp->GetObjectNameString().ToUpper())) && exp->GetClassName() == testClass)
+    if ((exp->GetObjectNameString().ToUpper().StartsWith(testName) || testName.StartsWith(exp->GetObjectNameString().ToUpper())) && exp->GetClassName() == testClass)
     {
       if (UObject* result = DestPackage->GetObject(exp))
       {
@@ -874,7 +874,7 @@ UObject* MTransStream::FindDestinationObject(UObject* obj) const
   std::vector<FObjectImport*> imports = DestPackage->GetAllImports();
   for (FObjectImport* imp : imports)
   {
-    if ((imp->GetObjectNameString().ToUpper().StartWith(testName) || testName.StartWith(imp->GetObjectNameString().ToUpper())) && imp->GetClassNameString() == testClass)
+    if ((imp->GetObjectNameString().ToUpper().StartsWith(testName) || testName.StartsWith(imp->GetObjectNameString().ToUpper())) && imp->GetClassNameString() == testClass)
     {
       if (UObject* result = DestPackage->GetObject(imp))
       {

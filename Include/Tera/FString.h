@@ -508,7 +508,7 @@ public:
     return true;
   }
 
-  inline bool StartWith(const FString& s) const
+  inline bool StartsWith(const FString& s) const
   {
     if (Data.size() && s.Size())
     {
