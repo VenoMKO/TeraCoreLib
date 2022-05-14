@@ -180,15 +180,7 @@ FStream& operator<<(FStream& s, FSkelMeshChunk& c)
   s << c.SoftVertices;
   s << c.BoneMap;
   s << c.NumRigidVertices;
-  if (c.RigidVertices.size() != c.NumRigidVertices)
-  {
-    UThrow("Failed to serialize a mesh chunk. RV mismatch: %zu != %d", c.RigidVertices.size(), c.NumRigidVertices);
-  }
   s << c.NumSoftVertices;
-  if (c.SoftVertices.size() != c.NumSoftVertices)
-  {
-    UThrow("Failed to serialize a mesh chunk. SV mismatch: %zu != %d", c.SoftVertices.size(), c.NumSoftVertices);
-  }
   s << c.MaxBoneInfluences;
   if (s.IsReading())
   {
@@ -492,6 +484,19 @@ std::vector<FSoftSkinVertex> FStaticLODModel::GetVertices() const
 
 std::vector<FSoftSkinVertex> FStaticLODModel::GetVertices(bool gpuBuffer) const
 {
+  if (!gpuBuffer)
+  {
+    // verify that cpu buffer is valid
+    for (const FSkelMeshChunk& chunk : Chunks)
+    {
+      if (chunk.NumRigidVertices != chunk.RigidVertices.size() ||
+          chunk.NumSoftVertices != chunk.SoftVertices.size())
+      {
+        gpuBuffer = true;
+        break;
+      }
+    }
+  }
   std::vector<FSoftSkinVertex> result;
   result.reserve(NumVertices);
   if (gpuBuffer)

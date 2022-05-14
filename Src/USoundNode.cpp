@@ -259,8 +259,11 @@ void USoundNodeWave::Serialize(FStream& s)
     UnkData1.Serialize(s, this);
     UnkData2.Serialize(s, this);
     UnkData3.Serialize(s, this);
-    UnkData4.Serialize(s, this);
-    UnkData5.Serialize(s, this);
+    if (s.GetFV() == VER_TERA_MODERN)
+    {
+      UnkData4.Serialize(s, this);
+      UnkData5.Serialize(s, this);
+    }
   }
 }
 

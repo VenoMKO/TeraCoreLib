@@ -172,7 +172,9 @@ FStream& operator<<(FStream& s, FPackageSummary& sum)
   const uint16 lv = sum.GetLicenseeVersion();
   if (s.IsReading() && (fv != 610 && fv != 897))
   {
-#if ALLOW_LATEST_UDK
+#if IS_ASTELLIA_BUILD
+    if (fv != VER_ASTELLIA)
+#elif ALLOW_LATEST_UDK
     if (fv != VER_UDK_LATEST)
 #endif
     UThrow("Package version \"%hu/%hu\" is not supported.", fv, lv);

@@ -158,6 +158,8 @@ public:
   static UClass* FindClass(const FString& name);
   // Create a new package. The package won't be managed by the shared memory/package manager!
   static std::shared_ptr<FPackage> CreateNewPackage(const FPackageSummary& summary);
+  // Get class package names
+  static std::vector<FString> ClassPackages(bool core = true, bool minimal = true);
 
 private:
   // Packages must be loaded/created from the static methods
@@ -289,6 +291,7 @@ public:
   inline FObjectImport* GetImportObject(PACKAGE_INDEX index) const
   {
     const PACKAGE_INDEX i = -index - 1;
+    DBreakIf(i >= Imports.size());
     return Imports[i];
   }
 
@@ -299,6 +302,7 @@ public:
   inline FObjectExport* GetExportObject(PACKAGE_INDEX index) const
   {
     const PACKAGE_INDEX i = index - 1;
+    DBreakIf(i >= Exports.size());
     return Exports[i];
   }
 
@@ -367,6 +371,7 @@ public:
   // Get name at index
   inline void GetIndexedNameString(NAME_INDEX index, FString& output) const
   {
+    DBreakIf(index >= Names.size());
     Names[index].GetString(output);
   }
 

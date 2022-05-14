@@ -3,6 +3,8 @@
 #define VER_TERA_MODERN 897
 #define VER_UDK_LATEST 868
 
+#define VER_ASTELLIA 867
+
 // Current TMM version
 #if USE_LEGACY_FILEMOD_VER
 #define VER_TERA_FILEMOD 2

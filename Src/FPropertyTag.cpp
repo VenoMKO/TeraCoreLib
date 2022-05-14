@@ -349,7 +349,7 @@ FStream& operator<<(FStream& s, FPropertyTag& tag)
   }
   else if (tag.Type == NAME_BoolProperty)
   {
-    if (s.GetFV() < VER_TERA_MODERN)
+    if (s.GetFV() < VER_ASTELLIA)
     {
       bool Value = tag.BoolVal;
       s << Value;

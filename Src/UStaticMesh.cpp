@@ -404,7 +404,10 @@ void UStaticMesh::Serialize(FStream& s)
 {
   Super::Serialize(s);
   
-  s << Source;
+  if (s.GetFV() == VER_TERA_CLASSIC || s.GetFV() == VER_TERA_MODERN)
+  {
+    s << Source;
+  }
   s << Bounds;
   s << FBodySetup;
 
@@ -773,7 +776,9 @@ bool UStaticMeshComponent::RegisterProperty(FPropertyTag* property)
 void UStaticMeshComponent::Serialize(FStream& s)
 {
   Super::Serialize(s);
+#if !IS_ASTELLIA_BUILD
   s << LodData;
+#endif
 }
 
 void UStaticMeshComponent::PostLoad()

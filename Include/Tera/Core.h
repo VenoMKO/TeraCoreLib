@@ -40,7 +40,11 @@
 
 // Load minimum class packages to improve load time.
 // Must not be used in Release builds!
-#define MINIMAL_CORE _DEBUG
+#if _DEBUG
+#define MINIMAL_CORE 1
+#else
+#define MINIMAL_CORE 0
+#endif
 
 // For testing only.
 // GPU buffer has lower quality due to packed positions and half precision UVs,
@@ -65,8 +69,20 @@
 // Allows to disable modern TMM file format
 #define USE_LEGACY_FILEMOD_VER 1
 
+// Might be useful for research and debug
+#define LOAD_DEFAULT_CLASSOBJS 0
+
 // Allows UDK files
 #define ALLOW_LATEST_UDK 0
+
+// Allows Astellia files
+#define IS_ASTELLIA_BUILD 1
+
+// Allow Blade and Soul files
+#define IS_BNS_BUILD 0
+
+// If the build is for Tera Online
+#define IS_TERA_BUILD (!IS_ASTELLIA_BUILD && !IS_BNS_BUILD)
 
 
 // --------------------------------------------------------------------
@@ -127,6 +143,8 @@ FString GetTempDir(const char* appName = nullptr);
 FString GetTempFilePath(const char* appName = nullptr);
 // Get file's last modification date
 uint64 GetFileTime(const std::wstring& path);
+
+extern const char* GameRootDir;
 
 #ifndef M_PI
 #define _USE_MATH_DEFINES

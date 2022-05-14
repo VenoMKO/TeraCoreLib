@@ -74,10 +74,12 @@ void BuildPackageList(const FString& path, std::vector<FString>& dirCache, std::
     {
       continue;
     }
+#if IS_TERA_BUILD
     if (FString(itemPath.parent_path().wstring()).EndsWith("S1Game\\Script"))
     {
       continue;
     }
+#endif
     std::string ext = itemPath.extension().string();
     if (((ext[1] == 'g' || ext[1] == 'G') && ((ext[2] == 'p' || ext[2] == 'P') || (ext[2] == 'm' || ext[2] == 'M'))) || ext[1] == 'u' || ext[1] == 'U')
     {
@@ -153,6 +155,9 @@ FString FPackage::GetRootPath()
 
 FString FPackage::GetDcPath(const FString& s1data)
 {
+#if !IS_TERA_BUILD
+  return {};
+#else
   FString data = s1data.Empty() ? FPackage::RootDir : s1data;
   data = data.FStringByAppendingPath("S1Data");
   FString tmp = data.FStringByAppendingPath("DataCenter_Final.dat");
@@ -176,6 +181,7 @@ FString FPackage::GetDcPath(const FString& s1data)
     return tmp;
   }
   return {};
+#endif
 }
 
 void FPackage::SetMetaData(const std::unordered_map<FString, std::unordered_map<FString, AMetaDataEntry>>& meta)
@@ -213,9 +219,13 @@ const std::unordered_map<FString, std::vector<FString>>& FPackage::GetCompositeP
 
 FString FPackage::GetCompositePackageMapPath()
 {
+#if !IS_TERA_BUILD
+  return {};
+#else
   std::filesystem::path encryptedPath = std::filesystem::path(RootDir.WString()) / "CookedPC" / CompositePackageMapperName;
   encryptedPath.replace_extension(".dat");
   return encryptedPath.wstring();
+#endif
 }
 
 FString FPackage::GetObjectCompositePath(const FString& path)
@@ -712,18 +722,26 @@ FPackage::S1DirError FPackage::ValidateRootDirCandidate(const FString& s1game)
   {
     return S1DirError::NOT_FOUND;
   }
-  if (s1game.Filename(false) != "S1Game")
+  std::vector<FString> classPackages = ClassPackages(true, true);
+  std::vector<FString> extraClassPacakges = ClassPackages(false, false);
+  classPackages.insert(classPackages.end(), extraClassPacakges.begin(), extraClassPacakges.end());
+#if IS_ASTELLIA_BUILD
+  const std::filesystem::path scriptsDir = std::filesystem::path(s1game.WString()) / "Script";
+#else
+  const std::filesystem::path scriptsDir = std::filesystem::path(s1game.WString()) / "CookedPC";
+#endif
+  if (s1game.Filename(false) != GameRootDir)
   {
-    LogE("Error! Folder name \"%s\" does not match the \"S1Game\"", s1game.Filename(false).UTF8());
+    LogE("Error! Folder name \"%s\" does not match the \"%s\"", s1game.Filename(false).UTF8(), GameRootDir);
     return S1DirError::NAME_MISSMATCH;
   }
-  const char* classPackages[] = { "Core.u", "Engine.u", "GameFramework.u", "S1Game.u", "GFxUI.u", "IpDrv.u", "UnrealEd.u", "GFxUIEditor.u" };
+  
   std::filesystem::path root = s1game.WString();
-  for (const char* name : classPackages)
+  for (const FString& name : classPackages)
   {
-    if (!std::filesystem::exists(root / "CookedPC" / name))
+    if (!std::filesystem::exists(scriptsDir / name.WString()))
     {
-      LogE("Error! %s was not found in the S1Game folder.", name);
+      LogE("Error! %s was not found in the %s folder.", name.UTF8().c_str(), GameRootDir);
       return S1DirError::CLASSES_NOT_FOUND;
     }
   }
@@ -731,14 +749,14 @@ FPackage::S1DirError FPackage::ValidateRootDirCandidate(const FString& s1game)
   FILE* f = _wfopen(testWritePermissionsFile.wstring().c_str(), L"w");
   if (!f)
   {
-    LogE("Error! Not enough permissions to write to the S1Game folder.");
+    LogE("Error! Not enough permissions to write to the %s folder.", scriptsDir);
     return S1DirError::ACCESS_DENIED;
   }
   fclose(f);
   std::error_code err;
   if (!std::filesystem::remove(testWritePermissionsFile, err))
   {
-    LogE("Error! Not enough permissions to write to the S1Game folder.");
+    LogE("Error! Not enough permissions to write to the %s folder.", scriptsDir);
     return S1DirError::ACCESS_DENIED;
   }
   return S1DirError::OK;
@@ -747,6 +765,38 @@ FPackage::S1DirError FPackage::ValidateRootDirCandidate(const FString& s1game)
 UClass* FPackage::FindClass(const FString& name)
 {
   return Cast<UClass>(ClassMap[name]);
+}
+
+std::vector<FString> FPackage::ClassPackages(bool core, bool minimal)
+{
+  std::vector<FString> result;
+  if (core && minimal)
+  {
+    result.emplace_back("Core.u");
+  }
+#if IS_ASTELLIA_BUILD
+  const char* required[] = { "Engine.u", "GameFramework.u", "NSGame.u", "GFxUI.u" };
+  const char* extra[] = { "UnrealEd.u", "NSEditor.u", "GFxUIEditor.u", "WinDrv.u", "IpDrv.u", "OnlineSubsystemPC.u", "OnlineSubsystemLive.u", "OnlineSubsystemGameSpy.u", "OnlineSubsystemSteamworks.u" };
+#else
+  const char* required[] = { "Engine.u", "GameFramework.u", "S1Game.u", "GFxUI.u" };
+  const char* extra[] = { "UnrealEd.u", "GFxUIEditor.u", "WinDrv.u", "IpDrv.u", "OnlineSubsystemPC.u" };
+#endif
+
+  if (minimal)
+  {
+    for (const char* name : required)
+    {
+      result.emplace_back(name);
+    }
+  }
+  else
+  {
+    for (const char* name : extra)
+    {
+      result.emplace_back(name);
+    }
+  }
+  return result;
 }
 
 std::shared_ptr<FPackage> FPackage::CreateNewPackage(const FPackageSummary& summary)
@@ -918,6 +968,7 @@ void FPackage::LoadClassPackage(const FString& name)
     }
 
     // Serialize defaults
+#if LOAD_DEFAULT_CLASSOBJS
     for (UObject* root : defaults)
     {
       MReadStream s(packageStream.GetAllocation(), false, packageSize);
@@ -937,6 +988,7 @@ void FPackage::LoadClassPackage(const FString& name)
         root->Load(s);
       }
     }
+#endif
 
     UClass::CreateBuiltInClasses(package.get());
 
@@ -1044,7 +1096,7 @@ void FPackage::LoadClassPackage(const FString& name)
     for (FObjectExport* exp : package->Exports)
     {
       UObject* obj = package->GetObject(exp->ObjectIndex, false);
-      DBreakIf(!obj || !obj->IsLoaded());
+      DBreakIf((!obj || !obj->IsLoaded()) && !obj->IsTemplate(RF_ClassDefaultObject));
     }
 #endif
   }
@@ -1782,7 +1834,9 @@ void FPackage::Load(FStream& s)
     {
       s.SetPosition(Summary.ImportExportGuidsOffset);
     }
+#if !IS_ASTELLIA_BUILD
     DBreakIf(Summary.ImportGuidsCount || Summary.ExportGuidsCount);
+#endif
     ImportGuids.clear();
     ImportGuids.resize(Summary.ImportGuidsCount);
     for (uint32 idx = 0; idx < Summary.ImportGuidsCount; ++idx)

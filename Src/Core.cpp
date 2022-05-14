@@ -61,6 +61,13 @@ const char* TMM_ModPrefix = "MOD:";
 const char* TMM_ConfigName = "Settings.ini";
 const char* TMM_GameConfigName = "ModList.tmm";
 
+#if IS_ASTELLIA_BUILD
+const char* GameRootDir = "NSGame";
+#elif IS_BNS_BUILD
+#else
+const char* GameRootDir = "S1Game";
+#endif
+
 FString GetLzoError(int err)
 {
   switch (err)

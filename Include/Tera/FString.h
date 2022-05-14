@@ -233,12 +233,17 @@ public:
 
   inline bool EndsWith(const char* suffix) const
   {
-    auto sfxlen = strlen(suffix);
-    if (sfxlen > Data.size())
+    int32 sfxlen = (int32)strlen(suffix);
+    if (sfxlen > (int32)Data.size())
     {
       return false;
     }
-    return Data.compare(Data.size() - sfxlen, sfxlen, suffix) == 0;
+    int32 offset = 0;
+    if (!Data.back())
+    {
+      offset = 1;
+    }
+    return Data.compare(std::max<int32>((int32)Data.size() - sfxlen - offset, 0), sfxlen, suffix) == 0;
   }
 
   inline bool operator==(const FString& a) const

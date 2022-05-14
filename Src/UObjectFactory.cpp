@@ -532,6 +532,12 @@ UObject* UObject::Object(FObjectExport* exp)
   {
     return new UComponent(exp);
   }
+#if IS_ASTELLIA_BUILD
+  if (c.StartsWith("PA") && (c.EndsWith("Agent") || c.EndsWith("Agent2")))
+  {
+    return new UComponent(exp);
+  }
+#endif
   // Fallback for all *Actor classes except components
   if (c.Find(NAME_Actor) != std::string::npos && c != NAME_ActorFactory)
   {

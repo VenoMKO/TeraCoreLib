@@ -668,11 +668,20 @@ bool UMaterialInterface::RegisterProperty(FPropertyTag* property)
 
 UTexture2D* UMaterialInterface::GetDiffuseTexture() const
 {
-  UTexture2D* result = GetTextureParameterValue("PCC_HairDiffuseMap");
+  UTexture2D* result = nullptr;
+#if IS_ASTELLIA_BUILD
+  result = GetTextureParameterValue("*Diffuse");
+  if (!result)
+  {
+    result = GetTextureParameterValue("Di_Map");
+  }
+#else
+  result = GetTextureParameterValue("PCC_HairDiffuseMap");
   if (!result)
   {
     result = GetTextureParameterValue("DiffuseMap");
   }
+#endif
   return result;
 }
 
@@ -1033,6 +1042,7 @@ std::map<FString, bool> UMaterialInterface::GetStaticBoolParameters() const
 
 UTexture2D* UMaterialInterface::GetTextureParameterValue(const FString& name) const
 {
+  bool trailing = name.Front() == '*';
   bool thisValue = false;
   for (FPropertyValue* container : TextureParameterValues)
   {
@@ -1040,9 +1050,10 @@ UTexture2D* UMaterialInterface::GetTextureParameterValue(const FString& name) co
     for (FPropertyValue* subcontainer : tmpArray)
     {
       FPropertyTag* tmpTag = subcontainer->GetPropertyTagPtr();
-      if (tmpTag->Name == "ParameterName" && tmpTag->Value->GetName() == name)
+      if (tmpTag->Name == "ParameterName")
       {
-        thisValue = true;
+        const FString tmpName = tmpTag->Value->GetName().String();
+        thisValue = trailing ? tmpName.EndsWith(name.UTF8().substr(1).c_str()) : tmpName == name;
         continue;
       }
       else if (thisValue && tmpTag->Name == "ParameterValue")

@@ -44,7 +44,7 @@ void UTextBuffer::Serialize(FStream& s)
 void UField::Serialize(FStream& s)
 {
   Super::Serialize(s);
-  if (s.GetFV() < VER_TERA_MODERN)
+  if (s.GetFV() == VER_TERA_CLASSIC)
   {
     SERIALIZE_UREF(s, Superfield);
   }
@@ -136,13 +136,13 @@ void UStruct::Serialize(FStream& s)
 void UState::Serialize(FStream& s)
 {
   Super::Serialize(s);
-  if (s.GetFV() < VER_TERA_MODERN)
+  if (s.GetFV() == VER_TERA_CLASSIC)
   {
     int32 unk = 0;
     s << unk;
   }
   s << ProbeMask;
-  if (s.GetFV() < VER_TERA_MODERN)
+  if (s.GetFV() < VER_ASTELLIA)
   {
     s << IgnoreMask;
   }
@@ -166,6 +166,7 @@ void UStruct::SerializeTaggedProperties(FStream& s, UObject* object, FPropertyVa
     int32 remainingDim = property ? property->ArrayDim : 0;
     FPropertyTag* tagPtr = nullptr;
     FPropertyTag* prevTagPtr = nullptr;
+    UProperty* prevProperty = nullptr;
     while (1)
     {
       FPropertyValue* newValue = nullptr;
@@ -193,6 +194,7 @@ void UStruct::SerializeTaggedProperties(FStream& s, UObject* object, FPropertyVa
 
       DBreakIf(object->GetClassName() == NAME_Package);
 
+      prevProperty = property;
       if (advance && --remainingDim <= 0)
       {
         property = property->PropertyLinkNext;
@@ -487,7 +489,7 @@ FStream& operator<<(FStream& s, FStateFrame& f)
 {
   SERIALIZE_UREF(s, f.Node);
   SERIALIZE_UREF(s, f.StateNode);
-  if (s.GetFV() < VER_TERA_MODERN)
+  if (s.GetFV() < VER_ASTELLIA)
   {
     s << f.ProbeMask64;
   }
