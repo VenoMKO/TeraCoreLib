@@ -269,6 +269,7 @@
     <ClInclude Include="Include\Tera\CoreDebug.h" />
     <ClInclude Include="Include\Tera\CoreMath.h" />
     <ClInclude Include="Include\Tera\CoreStrings.h" />
+    <ClInclude Include="Include\Tera\CoreTMM.h" />
     <ClInclude Include="Include\Tera\CoreTypes.h" />
     <ClInclude Include="Include\Tera\CoreVersion.h" />
     <ClInclude Include="Include\Tera\DC.h" />

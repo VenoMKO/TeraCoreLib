@@ -2461,6 +2461,8 @@ struct FCompositeMeta {
     FString ObjectPath;
     uint8 Compression = COMPRESS_None;
 
+    FString Continer;
+
     friend FStream& operator<<(FStream& s, FPackageEntry& e);
   };
 

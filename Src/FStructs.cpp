@@ -4,6 +4,7 @@
 #include "Tera/FPackage.h"
 
 #include "Tera/CoreMath.h"
+#include "Tera/CoreTMM.h"
 #include "Tera/Utils/ALog.h"
 
 #include <objbase.h>
@@ -1506,7 +1507,7 @@ void FCompositeMeta::SerializeLegacy(FStream& s)
         LogE(exp.what());
         continue;
       }
-      if (sum.FolderName.StartsWith(FN_MOD_PREFIX))
+      if (sum.FolderName.StartsWith(TMM_ModPrefix))
       {
         pkg.ObjectPath = sum.FolderName.Substr(4);
       }

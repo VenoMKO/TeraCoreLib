@@ -6,6 +6,7 @@
 extern const char* PackageMapperName;
 extern const char* CompositePackageMapperName;
 extern const char* ObjectRedirectorMapperName;
+extern const char* CompositePackageMapperBackupName;
 
 bool GEncrytMapperFile(const std::filesystem::path& path, const std::string& decrypted);
 void GDecrytMapperFile(const std::filesystem::path& path, std::string& decrypted);
@@ -19,6 +20,7 @@ struct FCompositePackageMapEntry {
   friend FStream& operator<<(FStream& s, FCompositePackageMapEntry& e);
 };
 
+void DeserializeCompositePackageMapper(const std::filesystem::path& path, std::unordered_map<FString, FCompositePackageMapEntry>& outMap);
 void DeserializeCompositePackageMapper(const std::filesystem::path& path, std::unordered_map<FString, FCompositePackageMapEntry>& outMap, std::unordered_map<FString, std::vector<FString>>& outList);
 void SerializeCompositePackageMapper(const std::filesystem::path& path, const std::unordered_map<FString, FCompositePackageMapEntry>& map);
 

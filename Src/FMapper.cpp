@@ -1,9 +1,10 @@
 #include "Tera/FMapper.h"
 #include <array>
 
-const char* PackageMapperName = "PkgMapper";
-const char* CompositePackageMapperName = "CompositePackageMapper";
-const char* ObjectRedirectorMapperName = "ObjectRedirectorMapper";
+const char* PackageMapperName = "PkgMapper.dat";
+const char* CompositePackageMapperName = "CompositePackageMapper.dat";
+const char* ObjectRedirectorMapperName = "ObjectRedirectorMapper.dat";
+const char* CompositePackageMapperBackupName = "CompositePackageMapper.re";
 
 const char Key1[] = { 12, 6, 9, 4, 3, 14, 1, 10, 13, 2, 7, 15, 0, 8, 5, 11 };
 const char Key2[] = { 'G', 'e', 'n', 'e', 'r', 'a', 't', 'e', 'P', 'a', 'c', 'k', 'a', 'g', 'e', 'M', 'a', 'p', 'p', 'e', 'r' };
@@ -155,12 +156,17 @@ void DeserializeCompositePackageMapper(const std::filesystem::path& path, std::u
       std::swap(pos, elementEnd);
       pos++;
 
-      DBreakIf(outMap.count(outList[fileName].back()));
       outMap[outList[fileName].back()] = entry;
     } while (buffer.Find('|', pos) < posEnd - 1);
     pos++;
     posEnd++;
   }
+}
+
+void DeserializeCompositePackageMapper(const std::filesystem::path& path, std::unordered_map<FString, FCompositePackageMapEntry>& outMap)
+{
+  std::unordered_map<FString, std::vector<FString>> tmp;
+  DeserializeCompositePackageMapper(path, outMap, tmp);
 }
 
 void SerializeCompositePackageMapper(const std::filesystem::path& path, const std::unordered_map<FString, FCompositePackageMapEntry>& map)

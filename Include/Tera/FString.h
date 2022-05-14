@@ -134,7 +134,7 @@ public:
     return memcmp(a, Data.c_str(), lenB) == 0;
   }
 
-  inline std::wstring FStringByAppendingPath(const FString& path)
+  inline std::wstring FStringByAppendingPath(const FString& path) const
   {
     if (Empty())
     {
@@ -464,6 +464,11 @@ public:
   inline size_t Find(const FString& str, const size_t offset = 0) const
   {
     return Data.find(str.Data, offset);
+  }
+
+  inline size_t RFind(const char ch, const size_t offset = std::string::npos) const
+  {
+    return Data.rfind(ch, offset);
   }
 
   inline void Resize(size_t size)

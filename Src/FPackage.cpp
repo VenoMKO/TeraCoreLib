@@ -11,6 +11,7 @@
 #include "Tera/UObjectReferencer.h"
 #include "Tera/Cast.h"
 #include "Tera/CoreMath.h"
+#include "Tera/CoreTMM.h"
 #include "Tera/CoreCompression.h"
 
 #include "Tera/Utils/APerfSamples.h"
@@ -319,7 +320,7 @@ bool FPackage::CreateCompositeMod(CompositeModContext& ctx)
       ctx.Error = FString::Sprintf("Failed to read package %s.", path.Filename().C_str());
       return false;
     }
-    if (!sum.FolderName.StartsWith(FN_MOD_PREFIX))
+    if (!sum.FolderName.StartsWith(TMM_ModPrefix))
     {
       ctx.Error = FString::Sprintf("Package %s has no composite info! Try to resave it from the original.", sum.PackageName.C_str());
       return false;
@@ -491,6 +492,182 @@ bool FPackage::CreateCompositeMod(CompositeModContext& ctx)
     write << meta.MetaCRC;
   }
   return true;
+}
+
+FCompositeMeta FPackage::InstallCompositeMod(const FString& modPath, const FString& s1game)
+{
+  FReadStream read(modPath);
+  if (!read.IsGood())
+  {
+    UThrow("Failed to open mod file!");
+  }
+
+  FCompositeMeta meta;
+  read << meta;
+
+  if (meta.Version >= VER_TERA_FILEMOD_NEW_META)
+  {
+    if (FCompositeMeta::ComputeMetaChecksum(read, meta) != meta.MetaCRC ||
+        FCompositeMeta::ComputePayloadChecksum(read, meta) != meta.PayloadCRC)
+    {
+      UThrow("Mod file is corrupted!");
+    }
+  }
+
+  FCompositeMeta newMeta = meta;
+
+  std::vector<FString> containers;
+  containers.emplace_back("TMM_" + meta.Container);
+  FString dest = TMMGetModContainerPath(s1game.WString(), containers.back().WString()).wstring();
+  std::unique_ptr<FWriteStream> write = std::make_unique<FWriteStream>(dest);
+  if (!read.IsGood())
+  {
+    UThrow("Failed to write to the game folder!");
+  }
+
+  void* tmp = nullptr;
+
+  int32 continerIndex = 0;
+  bool needsDescriptor = meta.DescriptorSize;
+  for (uint32 idx = 0; idx < meta.Packages.size(); ++idx)
+  {
+    const FCompositeMeta::FPackageEntry& src = meta.Packages[idx];
+    FCompositeMeta::FPackageEntry& dst = newMeta.Packages[idx];
+
+    if (!src.Size)
+    {
+      continue;
+    }
+
+    // Split too big GPK into pieces
+    if (write->GetPosition() > TMM_MAX_CONTAINER_SIZE)
+    {
+      write->Flush();
+      containers.emplace_back(FString::Sprintf("%s_%d", containers.front().UTF8().c_str(), ++continerIndex));
+      dest = TMMGetModContainerPath(s1game.WString(), containers.back().WString()).wstring();
+      write = std::make_unique<FWriteStream>(dest);
+      needsDescriptor = meta.DescriptorSize;
+    }
+
+    // Write descriptor
+    if (needsDescriptor)
+    {
+      needsDescriptor = false;
+      tmp = malloc(meta.DescriptorSize);
+      read.SetPosition(meta.DescriptorOffset);
+      read.SerializeBytes(tmp, meta.DescriptorSize);
+      newMeta.DescriptorOffset = write->GetPosition();
+      write->SerializeBytes(tmp, newMeta.DescriptorSize);
+      free(tmp);
+    }
+
+    // Actual payload
+    read.SetPosition(src.Offset);
+    tmp = malloc(src.Size);
+    if (src.Compression && src.CompressedSize)
+    {
+      void* compressed = malloc(src.CompressedSize);
+      read.SerializeBytes(compressed, src.CompressedSize);
+      DecompressMemory((ECompressionFlags)src.Compression, tmp, src.Size, compressed, src.CompressedSize);
+      free(compressed);
+      dst.Compression = COMPRESS_None;
+      dst.CompressedSize = 0;
+    }
+    else
+    {
+      read.SerializeBytes(tmp, src.Size);
+    }
+
+    dst.Continer = containers.back();
+    dst.Offset = write->GetPosition();
+
+    write->SerializeBytes(tmp, src.Size);
+    free(tmp);
+  }
+
+  std::map<FString, FString> remapTfcs;
+  for (uint32 idx = 0; idx < meta.Tfcs.size(); ++idx)
+  {
+    const FCompositeMeta::FTfcEntry& src = meta.Tfcs[idx];
+    if (!src.Size)
+    {
+      DBreak();
+      continue;
+    }
+
+    int32 tfcIndex = TMMGetAvailableTfcIndex(s1game.WString());
+    if (!tfcIndex)
+    {
+      std::error_code err;
+      for (const FString& container : containers)
+      {
+        std::filesystem::remove(TMMGetModContainerPath(s1game.WString(), container.WString()), err);
+      }
+      for (const auto& p : remapTfcs)
+      {
+        std::filesystem::remove(TMMGetModTfcPath(s1game.WString(), p.second.WString()), err);
+      }
+      UThrow("Can't install the mod because there are no free TFC slots left.\nTry to remove a few mods.");
+    }
+
+    read.SetPosition(src.Offset);
+    tmp = malloc(src.Size);
+    read.SerializeBytes(tmp, src.Size);
+
+    FWriteStream tfcWrite(TMMGetModTfcPath(s1game.WString(), tfcIndex));
+    tfcWrite.SerializeBytes(tmp, src.Size);
+    free(tmp);
+
+    if (!tfcWrite.IsGood())
+    {
+      std::error_code err;
+      for (const FString& container : containers)
+      {
+        std::filesystem::remove(TMMGetModContainerPath(s1game.WString(), container.WString()), err);
+      }
+      for (const auto& p : remapTfcs)
+      {
+        std::filesystem::remove(TMMGetModTfcPath(s1game.WString(), p.second.WString()), err);
+      }
+      UThrow("Failed to write \"%s\" to the game folder.", TMMGetTfcName(tfcIndex).c_str());
+    }
+
+    remapTfcs[TMMGetTfcName(src.Index)] = TMMGetTfcName(tfcIndex);
+    newMeta.Tfcs[idx].Index = tfcIndex;
+    newMeta.Tfcs[idx].Size = 0;
+  }
+
+  // Update Tfc names
+  for (const FCompositeMeta::FPackageEntry& pkg : newMeta.Packages)
+  {
+    const FString tmpPath = TMMGetModContainerPath(s1game.WString(), pkg.Continer.WString()).wstring();
+    FReadStream tmpRead(tmpPath);
+    FWriteStream tmpWrite(tmpPath);
+    tmpRead.SetPosition(pkg.Offset);
+    FPackageSummary sum;
+    tmpRead << sum;
+    tmpRead.SetPosition(pkg.Offset + sum.NamesOffset);
+
+    for (uint32 nameIndex = 0; nameIndex < sum.NamesCount; ++nameIndex)
+    {
+      FILE_OFFSET nameOffset = tmpRead.GetPosition();
+      FNameEntry name;
+      tmpRead << name;
+      if (remapTfcs.count(name.GetString()))
+      {
+        tmpWrite.SetPosition(nameOffset);
+        name.SetString(remapTfcs[name.GetString()]);
+        tmpWrite << name;
+
+        if (remapTfcs.size() == 1)
+        {
+          // Nothing to do
+          break;
+        }
+      }
+    }
+  }
+  return newMeta;
 }
 
 std::vector<UClass*> FPackage::GetClasses()
@@ -1389,7 +1566,7 @@ std::shared_ptr<FPackage> FPackage::CreateModDescriptor(const FString& name, con
   FPackageSummary summary;
   int32 tmm_ver_major = 0, tmm_ver_minor = 0;
   GetTargetTmmVersion(tmm_ver_major, tmm_ver_minor);
-  summary.FolderName = FString::Sprintf("%sTMM version %d.%02d", FN_MOD_PREFIX, tmm_ver_major, tmm_ver_minor);
+  summary.FolderName = FString::Sprintf("%sTMM version %d.%02d", TMM_ModPrefix, tmm_ver_major, tmm_ver_minor);
   summary.FolderName.Terminate();
   summary.Guid = FGuid::Generate();
   summary.SetFileVersion(VER_TERA_MODERN, 17);
@@ -1696,7 +1873,7 @@ bool FPackage::Save(PackageSaveContext& context)
     if (map.count(packageName))
     {
       const FCompositePackageMapEntry& entry = map.at(packageName);
-      FString folderName = FN_MOD_PREFIX;
+      FString folderName = TMM_ModPrefix;
       folderName += entry.ObjectPath;
       SetFolderName(folderName);
     }
@@ -3406,7 +3583,7 @@ std::vector<FString> FPackageDumpHelper::GetGpkPools()
   result.reserve(FPackage::CompositPackageList.size());
   for (const auto& p : FPackage::CompositPackageList)
   {
-    if (p.first == "tmm_marker")
+    if (p.first == TMM_Marker)
     {
       continue;
     }

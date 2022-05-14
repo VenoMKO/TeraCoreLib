@@ -120,6 +120,9 @@ bool NeedsElevation();
 void UThrow(const char* fmt, ...);
 void UThrow(const wchar* fmt, ...);
 
+FString SetCoreAppInfo(const char* appName, int32 verMajor, int32 verMinor);
+FString GetCoreAppName();
+
 FString GetTempDir(const char* appName = nullptr);
 FString GetTempFilePath(const char* appName = nullptr);
 // Get file's last modification date

@@ -50,12 +50,16 @@
 #include <shlwapi.h>
 
 #include "Tera/CoreMath.h"
+#include "Tera/CoreTMM.h"
 #include "Tera/CoreCompression.h"
 #include "Tera/FPackage.h"
 
 #include <Tera/Utils/ALog.h>
 
-const char* FN_MOD_PREFIX = "MOD:";
+const char* TMM_Marker = "tmm_marker";
+const char* TMM_ModPrefix = "MOD:";
+const char* TMM_ConfigName = "Settings.ini";
+const char* TMM_GameConfigName = "ModList.tmm";
 
 FString GetLzoError(int err)
 {
@@ -510,6 +514,71 @@ void GetTargetTmmVersion(int32& major, int32& minor)
     minor = 0;
     break;
   }
+}
+
+void GetTmmVersion(int32& major, int32& minor)
+{
+  major = 2;
+  minor = 0;
+}
+
+#include "Tera/FMapper.h"
+
+std::filesystem::path GetCookedPcPath(const std::filesystem::path& s1game)
+{
+  return s1game / "CookedPC";
+}
+
+std::filesystem::path TMMGetGameConfigPath(const std::filesystem::path& s1game)
+{
+  return GetCookedPcPath(s1game) / TMM_GameConfigName;
+}
+
+std::filesystem::path TMMGetMapperPath(const std::filesystem::path& s1game)
+{
+  return GetCookedPcPath(s1game) / CompositePackageMapperName;
+}
+
+std::filesystem::path TMMGetMapperBackupPath(const std::filesystem::path& s1game)
+{
+  return GetCookedPcPath(s1game) / CompositePackageMapperBackupName;
+}
+
+std::filesystem::path TMMGetModContainerPath(const std::filesystem::path& s1game, const std::wstring& container)
+{
+  return (GetCookedPcPath(s1game) / container).replace_extension("gpk");
+}
+
+std::filesystem::path TMMGetModTfcPath(const std::filesystem::path& s1game, const std::wstring& tfc)
+{
+  return (GetCookedPcPath(s1game) / tfc).replace_extension("tfc");
+}
+
+std::filesystem::path TMMGetModTfcPath(const std::filesystem::path& s1game, int32 index)
+{
+  return TMMGetModTfcPath(s1game, A2W(TMMGetTfcName(index)));
+}
+
+std::string TMMGetTfcName(int32 index, bool ext)
+{
+  return Sprintf(ext ? "WorldTextures%03d.tfc" : "WorldTextures%03d", index);
+}
+
+int32 TMMGetAvailableTfcIndex(const std::filesystem::path& s1game, int32 desiredIndex)
+{
+  std::error_code err;
+  if (desiredIndex && !std::filesystem::exists(TMMGetModTfcPath(s1game, desiredIndex), err))
+  {
+    return desiredIndex;
+  }
+  for (int32 index = TMM_TFC_INDEX_MAX; index >= TMM_TFC_INDEX_MIN; --index)
+  {
+    if (!std::filesystem::exists(TMMGetModTfcPath(s1game, index), err))
+    {
+      return index;
+    }
+  }
+  return 0;
 }
 
 void LZO::Decompress(const void* src, FILE_OFFSET srcSize, void* dst, FILE_OFFSET dstSize, bool concurrent)

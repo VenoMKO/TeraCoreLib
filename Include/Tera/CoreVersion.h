@@ -17,5 +17,4 @@
 // New mod metadata. Dropped previous TMM compatibility. TMM v.1.20 and lower will show a proper message.
 #define VER_TERA_FILEMOD_NEW_META 3
 
-void GetTargetTmmVersion(int32& major, int32& minor);
 FString GetClientVersionString(const FString& s1data);

@@ -142,6 +142,8 @@ public:
   static std::vector<FString> GetCachedDirCache(const FString& s1game = {});
   // Create a composite mod package
   static bool CreateCompositeMod(CompositeModContext& context);
+  // Install(decompress and unpack) a composite mod. This won't modify CompositePackageMapper!
+  static FCompositeMeta InstallCompositeMod(const FString& modPath, const FString& s1game);
   // Get all classes
   static std::vector<UClass*> GetClasses();
   // Register a built-in class
