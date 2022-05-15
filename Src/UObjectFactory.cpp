@@ -28,6 +28,7 @@
 
 #include "Tera/UActor.h"
 #include "Tera/ULevel.h"
+#include "Tera/ULandscape.h"
 #include "Tera/UTerrain.h"
 #include "Tera/ULight.h"
 
@@ -505,6 +506,18 @@ UObject* UObject::Object(FObjectExport* exp)
   if (c == ULightmassImportanceVolume::StaticClassName())
   {
     return new ULightmassImportanceVolume(exp);
+  }
+  if (c == ULandscape::StaticClassName())
+  {
+    return new ULandscape(exp);
+  }
+  if (c == ULandscapeComponent::StaticClassName())
+  {
+    return new ULandscapeComponent(exp);
+  }
+  if (c == ULandscapeLayerInfoObject::StaticClassName())
+  {
+    return new ULandscapeLayerInfoObject(exp);
   }
 #if IS_TERA_BUILD
   if (c == US1LevelStreamingDistance::StaticClassName())
