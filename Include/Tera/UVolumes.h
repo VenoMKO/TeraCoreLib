@@ -62,3 +62,18 @@ public:
 
   std::vector<class USoundNodeWave*> GetAllWaves() const;
 };
+
+class ULightmassImportanceVolume : public UVolume {
+public:
+  DECL_UOBJ(ULightmassImportanceVolume, UVolume);
+};
+
+class UPostProcessVolume : public UVolume {
+public:
+  DECL_UOBJ(UPostProcessVolume, UVolume);
+};
+
+class UPAPostProcessVolume : public UPostProcessVolume {
+public:
+  DECL_UOBJ(UPAPostProcessVolume, UPostProcessVolume);
+};

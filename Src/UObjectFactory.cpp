@@ -118,9 +118,9 @@ UObject* UObject::Object(FObjectExport* exp)
   {
     return new UReverbVolume(exp);
   }
-  if (c == US1MusicVolume::StaticClassName())
+  if (c == UPostProcessVolume::StaticClassName())
   {
-    return new US1MusicVolume(exp);
+    return new UPostProcessVolume(exp);
   }
   if (c == UActor::StaticClassName())
   {
@@ -170,30 +170,6 @@ UObject* UObject::Object(FObjectExport* exp)
   {
     return new ULevelStreamingPersistent(exp);
   }
-  if (c == US1LevelStreamingDistance::StaticClassName())
-  {
-    return new US1LevelStreamingDistance(exp);
-  }
-  if (c == US1LevelStreamingBaseLevel::StaticClassName())
-  {
-    return new US1LevelStreamingBaseLevel(exp);
-  }
-  if (c == US1LevelStreamingSound::StaticClassName())
-  {
-    return new US1LevelStreamingSound(exp);
-  }
-  if (c == US1LevelStreamingSuperLow::StaticClassName())
-  {
-    return new US1LevelStreamingSuperLow(exp);
-  }
-  if (c == US1LevelStreamingVOID::StaticClassName())
-  {
-    return new US1LevelStreamingVOID(exp);
-  }
-  if (c == US1WaterVolume::StaticClassName())
-  {
-    return new US1WaterVolume(exp);
-  }
   if (c == ULevelStreamingVolume::StaticClassName())
   {
     return new ULevelStreamingVolume(exp);
@@ -209,6 +185,14 @@ UObject* UObject::Object(FObjectExport* exp)
   if (c == USkeletalMeshActor::StaticClassName())
   {
     return new USkeletalMeshActor(exp);
+  }
+  if (c == USkeletalMeshCinematicActor::StaticClassName())
+  {
+    return new USkeletalMeshCinematicActor(exp);
+  }
+  if (c == USkeletalMeshActorMAT::StaticClassName())
+  {
+    return new USkeletalMeshActorMAT(exp);
   }
   if (c == USpeedTreeActor::StaticClassName())
   {
@@ -518,6 +502,50 @@ UObject* UObject::Object(FObjectExport* exp)
   {
     return new UDistributionFloatUniform(exp);
   }
+  if (c == ULightmassImportanceVolume::StaticClassName())
+  {
+    return new ULightmassImportanceVolume(exp);
+  }
+#if IS_TERA_BUILD
+  if (c == US1LevelStreamingDistance::StaticClassName())
+  {
+    return new US1LevelStreamingDistance(exp);
+  }
+  if (c == US1LevelStreamingBaseLevel::StaticClassName())
+  {
+    return new US1LevelStreamingBaseLevel(exp);
+  }
+  if (c == US1LevelStreamingSound::StaticClassName())
+  {
+    return new US1LevelStreamingSound(exp);
+  }
+  if (c == US1LevelStreamingSuperLow::StaticClassName())
+  {
+    return new US1LevelStreamingSuperLow(exp);
+  }
+  if (c == US1LevelStreamingVOID::StaticClassName())
+  {
+    return new US1LevelStreamingVOID(exp);
+  }
+  if (c == US1WaterVolume::StaticClassName())
+  {
+    return new US1WaterVolume(exp);
+  }
+  if (c == US1MusicVolume::StaticClassName())
+  {
+    return new US1MusicVolume(exp);
+  }
+#endif
+#if IS_ASTELLIA_BUILD
+  if (c == UPAPostProcessVolume::StaticClassName())
+  {
+    return new UPAPostProcessVolume(exp);
+  }
+  if (c == UPASkeletalMeshActorMAT::StaticClassName())
+  {
+    return new UPASkeletalMeshActorMAT(exp);
+  }
+#endif
   
   // A fallback for unimplemented classes
   // MaterialExpressions must be before the UComponent due to UMaterialExpressionComponentMask

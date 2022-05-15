@@ -95,3 +95,18 @@ public:
 
   void PostLoad() override;
 };
+
+class USkeletalMeshCinematicActor : public USkeletalMeshActor {
+public:
+  DECL_UOBJ(USkeletalMeshCinematicActor, USkeletalMeshActor);
+};
+
+class USkeletalMeshActorMAT : public USkeletalMeshCinematicActor {
+public:
+  DECL_UOBJ(USkeletalMeshActorMAT, USkeletalMeshCinematicActor);
+};
+
+class UPASkeletalMeshActorMAT : public USkeletalMeshActorMAT {
+public:
+  DECL_UOBJ(UPASkeletalMeshActorMAT, USkeletalMeshActorMAT);
+};
