@@ -147,7 +147,11 @@ struct FPropertyValue {
     return *(T*)Data;
   }
 
+  bool GetVector2D(FVector2D& output);
+
   bool GetVector(FVector& output);
+
+  bool GetVector4(FVector4& output);
 
   UObject* GetObjectValuePtr(bool load = true);
 
@@ -286,7 +290,9 @@ struct FPropertyTag {
     return *(T*)(Value->Data);
   }
 
+  bool GetVector2D(FVector2D& output) const;
   bool GetVector(FVector& output) const;
+  bool GetVector4(FVector4& output) const;
   bool GetRotator(FRotator& output) const;
   bool GetLinearColor(FLinearColor& output) const;
   bool GetColor(FColor& output) const;

@@ -8,6 +8,34 @@
 
 #include "Tera/Utils/ALog.h"
 
+bool FPropertyValue::GetVector2D(FVector2D& output)
+{
+  if (Type != VID::Struct)
+  {
+    return false;
+  }
+  std::vector<FPropertyValue*> arr = GetArray();
+  for (FPropertyValue* v : arr)
+  {
+    if (v->Field)
+    {
+      if (v->Field->GetObjectName() == "X")
+      {
+        output.X = v->GetArray()[0]->GetFloat();
+      }
+      else if (v->Field->GetObjectName() == "Y")
+      {
+        output.Y = v->GetArray()[0]->GetFloat();
+      }
+      else
+      {
+        DBreak();
+      }
+    }
+  }
+  return true;
+}
+
 bool FPropertyValue::GetVector(FVector& output)
 {
   if (Type != VID::Struct)
@@ -30,6 +58,42 @@ bool FPropertyValue::GetVector(FVector& output)
       else if (v->Field->GetObjectName() == "Z")
       {
         output.Z = v->GetArray()[0]->GetFloat();
+      }
+      else
+      {
+        DBreak();
+      }
+    }
+  }
+  return true;
+}
+
+bool FPropertyValue::GetVector4(FVector4& output)
+{
+  if (Type != VID::Struct)
+  {
+    return false;
+  }
+  std::vector<FPropertyValue*> arr = GetArray();
+  for (FPropertyValue* v : arr)
+  {
+    if (v->Field)
+    {
+      if (v->Field->GetObjectName() == "X")
+      {
+        output.X = v->GetArray()[0]->GetFloat();
+      }
+      else if (v->Field->GetObjectName() == "Y")
+      {
+        output.Y = v->GetArray()[0]->GetFloat();
+      }
+      else if (v->Field->GetObjectName() == "Z")
+      {
+        output.Z = v->GetArray()[0]->GetFloat();
+      }
+      else if (v->Field->GetObjectName() == "W")
+      {
+        output.W = v->GetArray()[0]->GetFloat();
       }
       else
       {
@@ -155,6 +219,42 @@ FPropertyTag::FPropertyTag(UObject* owner, const FString& name, const FString& t
   NewValue();
 }
 
+bool FPropertyTag::GetVector2D(FVector2D& output) const
+{
+  if (!Value || Value->Type != FPropertyValue::VID::Struct)
+  {
+    return false;
+  }
+  std::vector<FPropertyValue*> arr = Value->GetArray();
+  for (FPropertyValue* v : arr)
+  {
+    if (v->Field)
+    {
+      if (v->Field->GetObjectName() == "X")
+      {
+        output.X = v->GetArray()[0]->GetFloat();
+      }
+      else if (v->Field->GetObjectName() == "Y")
+      {
+        output.Y = v->GetArray()[0]->GetFloat();
+      }
+      else if (v->Field->GetObjectName() == "Z")
+      {
+        LogW("%s:%s: Getting FVector2D from a FVector(4) property!", Owner->GetObjectPath().UTF8().c_str(), Name.String().UTF8().c_str());
+      }
+      else if (v->Field->GetObjectName() == "W")
+      {
+        LogW("%s:%s: Getting FVector from a FVector4 property!", Owner->GetObjectPath().UTF8().c_str(), Name.String().UTF8().c_str());
+      }
+      else
+      {
+        DBreak();
+      }
+    }
+  }
+  return true;
+}
+
 bool FPropertyTag::GetVector(FVector& output) const
 {
   if (!Value || Value->Type != FPropertyValue::VID::Struct)
@@ -181,6 +281,42 @@ bool FPropertyTag::GetVector(FVector& output) const
       else if (v->Field->GetObjectName() == "W")
       {
         LogW("%s:%s: Getting FVector from a FVector4 property!", Owner->GetObjectPath().UTF8().c_str(), Name.String().UTF8().c_str());
+      }
+      else
+      {
+        DBreak();
+      }
+    }
+  }
+  return true;
+}
+
+bool FPropertyTag::GetVector4(FVector4& output) const
+{
+  if (!Value || Value->Type != FPropertyValue::VID::Struct)
+  {
+    return false;
+  }
+  std::vector<FPropertyValue*> arr = Value->GetArray();
+  for (FPropertyValue* v : arr)
+  {
+    if (v->Field)
+    {
+      if (v->Field->GetObjectName() == "X")
+      {
+        output.X = v->GetArray()[0]->GetFloat();
+      }
+      else if (v->Field->GetObjectName() == "Y")
+      {
+        output.Y = v->GetArray()[0]->GetFloat();
+      }
+      else if (v->Field->GetObjectName() == "Z")
+      {
+        output.Z = v->GetArray()[0]->GetFloat();
+      }
+      else if (v->Field->GetObjectName() == "W")
+      {
+        output.W = v->GetArray()[0]->GetFloat();
       }
       else
       {

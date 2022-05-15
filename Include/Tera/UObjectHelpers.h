@@ -194,6 +194,22 @@ return property->GetVector(TName); \
 }\
 //
 
+#define REGISTER_VEC2D_PROP(TName)\
+if (PROP_IS(property, TName))\
+{\
+__GLUE_PROP(TName, Property) = property; \
+return property->GetVector2D(TName); \
+}\
+//
+
+#define REGISTER_VEC4_PROP(TName)\
+if (PROP_IS(property, TName))\
+{\
+__GLUE_PROP(TName, Property) = property; \
+return property->GetVector4(TName); \
+}\
+//
+
 #define REGISTER_ROT_PROP(TName)\
 if (PROP_IS(property, TName))\
 {\
