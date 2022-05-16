@@ -10,6 +10,10 @@ struct FExpressionInput {
   bool MaskB = false;
   bool MaskA = false;
 
+  FString InputName;
+  int32 OutputIndex = 0;
+  FString CustomDescription;
+
   FExpressionInput() = default;
 
   FExpressionInput(FPropertyTag* property);
@@ -104,6 +108,8 @@ struct AExpressionInput {
   bool MaskG = false;
   bool MaskB = false;
   bool MaskA = false;
+
+  int32 OutputIndex = 0;
 
   float FloatValue = 0.;
   bool BoolValue = false;
@@ -910,6 +916,30 @@ public:
   UPROP_NOINIT(FName, ParameterName);
   UPROP(float, PreviewWeight, 0.);
   UPROP_NOINIT(FGuid, ExpressionGUID);
+  bool RegisterProperty(FPropertyTag* property) override;
+  void AcceptVisitor(UMaterialExpressionViewVisitor& visitor) override;
+  void ExportExpression(AMaterialExpression& output) override;
+};
+
+enum LayerBlendType {
+  LB_AlphaBlend = 0,
+  LB_HeightBlend
+};
+
+struct FLandscapeLayerBlendInput {
+  FName LayerName;
+  LayerBlendType BlendType;
+  FExpressionInput LayerInput;
+  FExpressionInput HeightInput;
+  float PreviewWeight = 0.f;
+
+  void LoadFromPropertyValue(const FPropertyValue* v);
+};
+
+class UMaterialExpressionLandscapeLayerBlend : public UMaterialExpression {
+public:
+  DECL_UOBJ(UMaterialExpressionLandscapeLayerBlend, UMaterialExpression);
+  UPROP_NOINIT(std::vector<FLandscapeLayerBlendInput>, Layers);
   bool RegisterProperty(FPropertyTag* property) override;
   void AcceptVisitor(UMaterialExpressionViewVisitor& visitor) override;
   void ExportExpression(AMaterialExpression& output) override;

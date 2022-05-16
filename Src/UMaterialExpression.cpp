@@ -56,13 +56,21 @@ FExpressionInput::FExpressionInput(FPropertyTag * property)
       {
         MaskA = tag->Value ? tag->Value->GetBool() : tag->GetBool();
       }
+      else if (tagName == "OutputIndex")
+      {
+        OutputIndex = tag->GetInt();
+      }
+      else if (tagName == "InputName")
+      {
+        InputName = tag->GetString();
+      }
     }
   }
 }
 
 FString FExpressionInput::GetDescription() const
 {
-  return Title.Empty() ? FString("In") : Title;
+  return CustomDescription.Length() ? CustomDescription : InputName.Length() ? InputName : Title.Empty() ? FString("In") : Title;
 }
 
 int32 UMaterialExpression::GetPosX() const
@@ -507,6 +515,10 @@ UMaterialExpression* UMaterialExpression::StaticFactory(FObjectExport* exp)
   else if (c == UMaterialExpressionWorldPosition::StaticClassName())
   {
     result = new UMaterialExpressionWorldPosition(exp);
+  }
+  else if (c == UMaterialExpressionLandscapeLayerBlend::StaticClassName())
+  {
+    result = new UMaterialExpressionLandscapeLayerBlend(exp);
   }
   else
   {
@@ -2000,6 +2012,40 @@ void UMaterialExpressionTerrainLayerWeight::ExportExpression(AMaterialExpression
   output.Parameters.emplace_back(AExpressionInput::MakeExpressionInput(P_ParameterName, ParameterName.String()));
 }
 
+bool UMaterialExpressionLandscapeLayerBlend::RegisterProperty(FPropertyTag* property)
+{
+  SUPER_REGISTER_PROP();
+  if (PROP_IS(property, Layers))
+  {
+    for (FPropertyValue* v : property->GetArray())
+    {
+      Layers.emplace_back().LoadFromPropertyValue(v);
+    }
+    return true;
+  }
+  return false;
+}
+
+void UMaterialExpressionLandscapeLayerBlend::AcceptVisitor(UMaterialExpressionViewVisitor& visitor)
+{
+  SUPER_ACCEPT();
+  std::vector<FExpressionInput> inputs;
+  for (const FLandscapeLayerBlendInput& layer : Layers)
+  {
+    inputs.emplace_back(layer.LayerInput).CustomDescription = layer.LayerName.String() + "_In";
+    if (layer.HeightInput.Expression)
+    {
+      inputs.emplace_back(layer.HeightInput).CustomDescription = layer.LayerName.String() + "_HeightIn";
+    }
+  }
+  visitor.SetInput(inputs);
+}
+
+void UMaterialExpressionLandscapeLayerBlend::ExportExpression(AMaterialExpression& output)
+{
+  Super::ExportExpression(output);
+}
+
 bool UMaterialExpressionTextureCoordinate::RegisterProperty(FPropertyTag* property)
 {
   SUPER_REGISTER_PROP();
@@ -2203,3 +2249,32 @@ AExpressionInput::AExpressionInput(const FExpressionInput& input)
   , MaskB(input.MaskB)
   , MaskA(input.MaskA)
 {}
+
+void FLandscapeLayerBlendInput::LoadFromPropertyValue(const FPropertyValue* value)
+{
+  for (FPropertyValue* v : value->GetArray())
+  {
+    if (v->GetPropertyTagPtr()->Name == "LayerName")
+    {
+      LayerName = v->GetPropertyTagPtr()->GetName();
+    }
+    else if (v->GetPropertyTagPtr()->Name == "BlendType")
+    {
+      BlendType = (LayerBlendType)(v->GetPropertyTagPtr()->GetByte());
+    }
+    else if (v->GetPropertyTagPtr()->Name == "PreviewWeight")
+    {
+      PreviewWeight = v->GetPropertyTagPtr()->GetFloat();
+    }
+    else if (v->GetPropertyTagPtr()->Name == "LayerInput")
+    {
+      LayerInput = FExpressionInput(v->GetPropertyTagPtr());
+      LayerInput.CustomDescription = "LayerIn";
+    }
+    else if (v->GetPropertyTagPtr()->Name == "HeightInput")
+    {
+      HeightInput = FExpressionInput(v->GetPropertyTagPtr());
+      HeightInput.CustomDescription = "HeightIn";
+    }
+  }
+}
