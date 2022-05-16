@@ -141,6 +141,56 @@ struct FPropertyValue {
     return *(std::vector<FPropertyValue*>*)Data;
   }
 
+  inline bool& GetBool() const
+  {
+    return *(bool*)Data;
+  }
+
+  inline const uint8& GetByte() const
+  {
+    return *(uint8*)Data;
+  }
+
+  inline const uint32& GetInt() const
+  {
+    return *(uint32*)Data;
+  }
+
+  inline const float& GetFloat() const
+  {
+    return *(float*)Data;
+  }
+
+  inline const FName& GetName() const
+  {
+    return *(FName*)Data;
+  }
+
+  inline const FString& GetString() const
+  {
+    return *(FString*)Data;
+  }
+
+  inline const PACKAGE_INDEX& GetObjectIndex() const
+  {
+    return *(PACKAGE_INDEX*)Data;
+  }
+
+  inline const FScriptDelegate& GetScriptDelegate() const
+  {
+    return *(FScriptDelegate*)Data;
+  }
+
+  inline const FPropertyTag& GetPropertyTag() const
+  {
+    return *(FPropertyTag*)Data;
+  }
+
+  inline const std::vector<FPropertyValue*>& GetArray() const
+  {
+    return *(std::vector<FPropertyValue*>*)Data;
+  }
+
   template <typename T>
   T& GetTypedValue()
   {
@@ -270,6 +320,61 @@ struct FPropertyTag {
     return Value->GetPropertyTagPtr();
   }
 
+  inline const uint8& GetBool() const
+  {
+    return BoolVal;
+  }
+
+  inline const uint8& GetByte() const
+  {
+    return Value->GetByte();
+  }
+
+  inline const uint32& GetInt() const
+  {
+    return Value->GetInt();
+  }
+
+  inline const float& GetFloat() const
+  {
+    return Value->GetFloat();
+  }
+
+  inline const FName& GetName() const
+  {
+    return Value->GetName();
+  }
+
+  inline const FString& GetString() const
+  {
+    return Value->GetString();
+  }
+
+  inline const PACKAGE_INDEX& GetObjectIndex() const
+  {
+    return Value->GetObjectIndex();
+  }
+
+  inline const FScriptDelegate& GetScriptDelegate() const
+  {
+    return Value->GetScriptDelegate();
+  }
+
+  inline const FPropertyTag& GetPropertyTag() const
+  {
+    return Value->GetPropertyTag();
+  }
+
+  inline const std::vector<FPropertyValue*>& GetArray() const
+  {
+    return Value->GetArray();
+  }
+
+  inline const FPropertyTag* GetPropertyTagPtr() const
+  {
+    return Value->GetPropertyTagPtr();
+  }
+
   inline UObject* GetObjectValuePtr()
   {
     return Value->GetObjectValuePtr();
@@ -282,6 +387,16 @@ struct FPropertyTag {
 
   template <typename T>
   T& GetTypedValue()
+  {
+    if (Type.String() == NAME_BoolProperty)
+    {
+      return *(T*)&BoolVal;
+    }
+    return *(T*)(Value->Data);
+  }
+
+  template <typename T>
+  const T& GetTypedValue() const
   {
     if (Type.String() == NAME_BoolProperty)
     {
