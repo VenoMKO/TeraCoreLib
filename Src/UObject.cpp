@@ -402,7 +402,21 @@ void UObject::Serialize(FStream& s)
 
   if (GetStaticClassName() != UClass::StaticClassName())
   {
-    SerializeScriptProperties(s);
+    // Don't load objects referenced from properties of 
+    // not implemented classes. References can go very deep
+    // and take some time, but without any practical benefit.
+    // TODO: Should be changed from recursive serialization to a looped one.
+    if (!Class || Class->GetObjectName() != GetStaticClassName())
+    {
+      bool serializeReferencedObjects = s.GetLoadSerializedObjects();
+      s.SetLoadSerializedObjects(false);
+      SerializeScriptProperties(s);
+      s.SetLoadSerializedObjects(serializeReferencedObjects);
+    }
+    else
+    {
+      SerializeScriptProperties(s);
+    }
   }
 
 #if _DEBUG
@@ -488,6 +502,7 @@ void UObject::Load(FStream& s)
       isNative = outer->ObjectFlags & RF_Native;
       outerIndex = outer->OuterIndex;
     }
+#if LOAD_DEFAULT_CLASSOBJS
     if (!isNative)
     {
       if (Class && !HasAnyFlags(RF_ClassDefaultObject))
@@ -495,6 +510,7 @@ void UObject::Load(FStream& s)
         DefaultObject = Class->GetClassDefaultObject();
       }
     }
+#endif
   }
 
   if (s.IsReading() && !IsTransacting())
