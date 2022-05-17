@@ -219,6 +219,36 @@ FPropertyTag::FPropertyTag(UObject* owner, const FString& name, const FString& t
   NewValue();
 }
 
+FGuid FPropertyTag::GetGuid() const
+{
+  int32 x = 0, y = 0, z = 0, w = 0;
+  for (FPropertyValue* v : GetArray())
+  {
+    if (!v->Field)
+    {
+      DBreak();
+      continue;
+    }
+    if (v->Field->GetObjectName() == "X")
+    {
+      x = v->GetArray()[0]->GetInt();
+    }
+    else if (v->Field->GetObjectName() == "Y")
+    {
+      y = v->GetArray()[0]->GetInt();
+    }
+    else if (v->Field->GetObjectName() == "Z")
+    {
+      z = v->GetArray()[0]->GetInt();
+    }
+    else if (v->Field->GetObjectName() == "W")
+    {
+      w = v->GetArray()[0]->GetInt();
+    }
+  }
+  return { x, y, z, w };
+}
+
 bool FPropertyTag::GetVector2D(FVector2D& output) const
 {
   if (!Value || Value->Type != FPropertyValue::VID::Struct)

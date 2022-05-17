@@ -186,6 +186,11 @@ struct FPropertyValue {
     return *(FPropertyTag*)Data;
   }
 
+  inline const FPropertyTag* GetPropertyTagPtr() const
+  {
+    return (FPropertyTag*)Data;
+  }
+
   inline const std::vector<FPropertyValue*>& GetArray() const
   {
     return *(std::vector<FPropertyValue*>*)Data;
@@ -379,6 +384,8 @@ struct FPropertyTag {
   {
     return Value->GetObjectValuePtr();
   }
+
+  FGuid GetGuid() const;
 
   void* GetValueData()
   {
