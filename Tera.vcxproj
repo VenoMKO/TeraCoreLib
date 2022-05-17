@@ -290,6 +290,7 @@
     <ClInclude Include="Include\Tera\UAnimation.h" />
     <ClInclude Include="Include\Tera\UClass.h" />
     <ClInclude Include="Include\Tera\UComponent.h" />
+    <ClInclude Include="Include\Tera\UInstancedFoliageActor.h" />
     <ClInclude Include="Include\Tera\ULandscape.h" />
     <ClInclude Include="Include\Tera\ULevel.h" />
     <ClInclude Include="Include\Tera\ULevelStreaming.h" />
@@ -353,6 +354,7 @@
     <ClCompile Include="Src\UAnimation.cpp" />
     <ClCompile Include="Src\UClass.cpp" />
     <ClCompile Include="Src\UComponent.cpp" />
+    <ClCompile Include="Src\UInstancedFoliageActor.cpp" />
     <ClCompile Include="Src\ULandscape.cpp" />
     <ClCompile Include="Src\ULevel.cpp" />
     <ClCompile Include="Src\ULevelStreaming.cpp" />

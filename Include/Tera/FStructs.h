@@ -2535,3 +2535,42 @@ struct FCompositeMeta {
 private:
   void SerializeLegacy(FStream& s);
 };
+
+enum EFoliageInstanceFlags : uint32 {
+  FOLIAGE_AlignToNormal = 0x00000001,
+  FOLIAGE_NoRandomYaw = 0x00000002,
+  FOLIAGE_Readjusted = 0x00000004
+};
+
+struct FFoliageInstancePlacementInfo {
+  FVector Location;
+  FRotator Rotation;
+  FRotator PreAlignRotation;
+  FVector DrawScale3D = { 1.f, 1.f, 1.f };
+  float ZOffset = 0.f;
+  EFoliageInstanceFlags Flags = FOLIAGE_AlignToNormal;
+  uint32 ClusterIndex = 0;
+};
+
+struct FFoliageInstanceCluster {
+  FBoxSphereBounds Bounds;
+  UObject* ClusterComponent = nullptr;
+  std::vector<int32> InstanceIndices;
+
+  friend FStream& operator<<(FStream& s, FFoliageInstanceCluster& c);
+};
+
+struct FFoliageInstance : public FFoliageInstancePlacementInfo
+{
+  UObject* Base = nullptr;
+  FGuid ProceduralGuid;
+  friend FStream& operator<<(FStream& s, FFoliageInstance& Instance);
+};
+
+struct FFoliageMeshInfo {
+  std::vector<FFoliageInstanceCluster> Clusters;
+  std::vector<FFoliageInstance> Instances;
+  UObject* Settings = nullptr;
+
+  friend FStream& operator<<(FStream& s, FFoliageMeshInfo& i);
+};

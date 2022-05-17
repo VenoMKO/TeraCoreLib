@@ -26,6 +26,7 @@
 #include "Tera/UPrefab.h"
 #include "Tera/UObjectReferencer.h"
 #include "Tera/UModel.h"
+#include "Tera/UInstancedFoliageActor.h"
 
 #include "Tera/UActor.h"
 #include "Tera/ULevel.h"
@@ -523,6 +524,10 @@ UObject* UObject::Object(FObjectExport* exp)
   if (c == UMaterialFunction::StaticClassName())
   {
     return new UMaterialFunction(exp);
+  }
+  if (c == UInstancedFoliageActor::StaticClassName())
+  {
+    return new UInstancedFoliageActor(exp);
   }
 #if IS_TERA_BUILD
   if (c == US1LevelStreamingDistance::StaticClassName())

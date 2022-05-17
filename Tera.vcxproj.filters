@@ -207,6 +207,9 @@
     <ClInclude Include="Include\Tera\UMaterialFunction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Tera\UInstancedFoliageActor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Core.cpp">
@@ -357,6 +360,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\UMaterialFunction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UInstancedFoliageActor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
