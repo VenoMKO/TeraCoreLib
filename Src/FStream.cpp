@@ -154,13 +154,69 @@ FStream& FStream::operator<<(FStringRef& r)
   return *this;
 }
 
+void FStream::LoadDelayedObjects()
+{
+  std::vector<UObject*> sharedStream;
+  std::vector<UObject*> individualStream;
+  for (UObject* obj : DelayedLoadingQueue)
+  {
+    if (obj)
+    {
+      if (obj->GetPackage() == GetPackage())
+      {
+        sharedStream.emplace_back(obj);
+      }
+      else
+      {
+        individualStream.emplace_back(obj);
+      }
+    }
+  }
+  if (sharedStream.size() > 1)
+  {
+    FReadStream s = FReadStream(A2W(GetPackage()->GetDataPath()));
+    s.SetPackage(GetPackage());
+    s.SetLoadSerializedObjects(GetPackage()->GetStream().GetLoadSerializedObjects());
+    for (UObject* obj : sharedStream)
+    {
+      obj->Load(s);
+    }
+    if (s.HasDelayedObjectQueue())
+    {
+      s.LoadDelayedObjects();
+    }
+    for (UObject* obj : individualStream)
+    {
+      obj->Load();
+    }
+  }
+  else
+  {
+    for (UObject* obj : DelayedLoadingQueue)
+    {
+      if (obj)
+      {
+        obj->Load();
+      }
+    }
+  }
+  DelayedLoadingQueue.clear();
+}
+
 void FStream::SerializeObjectRef(void*& obj, PACKAGE_INDEX& index)
 {
   if (IsReading())
   {
     (*this) << index;
     FILE_OFFSET tmpPos = GetPosition();
-    obj = GetPackage()->GetObject(index, GetLoadSerializedObjects());
+    if (GetDelayedObjectLoading() &&  GetLoadSerializedObjects())
+    {
+      obj = DelayedLoadingQueue.emplace_back(GetPackage()->GetObject(index, false));
+    }
+    else
+    {
+      obj = GetPackage()->GetObject(index, GetLoadSerializedObjects());
+    }
     SetPosition(tmpPos);
   }
   else

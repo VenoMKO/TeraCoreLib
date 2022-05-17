@@ -284,10 +284,29 @@ public:
 
   virtual uint16 GetLV() const;
 
+  inline bool GetDelayedObjectLoading() const
+  {
+    return DelayedObjectLoading;
+  }
+
+  inline bool HasDelayedObjectQueue() const
+  {
+    return DelayedLoadingQueue.size();
+  }
+
+  inline void SetDelayedObjectLoading(bool value)
+  {
+    DelayedObjectLoading = value;
+  }
+
+  virtual void LoadDelayedObjects();
+
 protected:
   bool Reading = false;
   FPackage* Package = nullptr;
   bool LoadSerializedObjects = true;
+  bool DelayedObjectLoading = true;
+  std::vector<class UObject*> DelayedLoadingQueue;
 };
 
 class FReadStream : public FStream {

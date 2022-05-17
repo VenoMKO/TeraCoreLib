@@ -548,6 +548,11 @@ void UObject::Load(FStream& s)
     //DBreakIf(!IsTransacting() && s.GetPosition() != Export->SerialOffset + Export->SerialSize);
     PostLoad();
   }
+
+  if (s.HasDelayedObjectQueue())
+  {
+    s.LoadDelayedObjects();
+  }
 }
 
 void UObject::PostLoad()
