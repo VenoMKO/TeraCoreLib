@@ -297,6 +297,7 @@
     <ClInclude Include="Include\Tera\ULightMap.h" />
     <ClInclude Include="Include\Tera\UMaterial.h" />
     <ClInclude Include="Include\Tera\UMaterialExpression.h" />
+    <ClInclude Include="Include\Tera\UMaterialFunction.h" />
     <ClInclude Include="Include\Tera\UMetaData.h" />
     <ClInclude Include="Include\Tera\UModel.h" />
     <ClInclude Include="Include\Tera\UNames.h" />
@@ -359,6 +360,7 @@
     <ClCompile Include="Src\ULightMap.cpp" />
     <ClCompile Include="Src\UMaterial.cpp" />
     <ClCompile Include="Src\UMaterialExpression.cpp" />
+    <ClCompile Include="Src\UMaterialFunction.cpp" />
     <ClCompile Include="Src\UMetaData.cpp" />
     <ClCompile Include="Src\UModel.cpp" />
     <ClCompile Include="Src\UNames.cpp" />

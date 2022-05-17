@@ -184,6 +184,8 @@ if (PROP_IS(property, TName))\
 
 #define REGISTER_TOBJ_PROP(TName, TType) __REGISTER_TYPED_PROP(TName, TType, ObjectValuePtr)
 
+#define REGISTER_ENUM_PROP(TName, TType) __REGISTER_TYPED_PROP(TName, TType, Byte)
+
 #define REGISTER_NAME_PROP(TName) __REGISTER_PROP(TName, Name)
 
 #define REGISTER_VEC_PROP(TName)\

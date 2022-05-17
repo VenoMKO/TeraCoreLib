@@ -12,6 +12,7 @@
 // Objects
 #include "Tera/UObjectRedirector.h"
 #include "Tera/UMaterial.h"
+#include "Tera/UMaterialFunction.h"
 #include "Tera/UMaterialExpression.h"
 #include "Tera/UPersistentCookerData.h"
 #include "Tera/UTexture.h"
@@ -518,6 +519,10 @@ UObject* UObject::Object(FObjectExport* exp)
   if (c == ULandscapeLayerInfoObject::StaticClassName())
   {
     return new ULandscapeLayerInfoObject(exp);
+  }
+  if (c == UMaterialFunction::StaticClassName())
+  {
+    return new UMaterialFunction(exp);
   }
 #if IS_TERA_BUILD
   if (c == US1LevelStreamingDistance::StaticClassName())

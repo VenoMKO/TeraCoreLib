@@ -1,5 +1,6 @@
 #pragma once
 #include <Tera/UMaterial.h>
+#include <Tera/UMaterialFunction.h>
 
 struct FExpressionInput {
   FString Title;
@@ -16,7 +17,7 @@ struct FExpressionInput {
 
   FExpressionInput() = default;
 
-  FExpressionInput(FPropertyTag* property);
+  FExpressionInput(const FPropertyTag* property);
 
   FString GetDescription() const;
 
@@ -24,6 +25,32 @@ struct FExpressionInput {
   {
     return Expression;
   }
+};
+
+struct FFunctionExpressionInput {
+  UMaterialExpression* ExpressionInput = nullptr;
+  FGuid ExpressionInputId;
+  FExpressionInput Input;
+
+  void LoadFromPropertyValue(const FPropertyValue* v);
+};
+
+struct FFunctionExpressionOutput {
+  UMaterialExpression* ExpressionOutput = nullptr;
+  FGuid ExpressionOutputId;
+  FExpressionInput Output;
+
+  void LoadFromPropertyValue(const FPropertyValue* v);
+};
+
+struct FLandscapeLayerBlendInput {
+  FName LayerName;
+  LayerBlendType BlendType;
+  FExpressionInput LayerInput;
+  FExpressionInput HeightInput;
+  float PreviewWeight = 0.f;
+
+  void LoadFromPropertyValue(const FPropertyValue* v);
 };
 
 struct AExpressionInput {
@@ -128,8 +155,10 @@ public:
   virtual void SetValue(const FString& value) = 0;
   virtual void SetDescription(const FString& desc) = 0;
   virtual void SetInput(const std::vector<FExpressionInput>& input) = 0;
+  virtual void SetOutput(const std::vector<FExpressionInput>& input) = 0;
   virtual void SetEditorPosition(int32 x, int32 y) = 0;
   virtual void SetEditorSize(int32 x, int32 y) = 0;
+  virtual void SetIsFinalNode(bool flag = true) = 0;
 };
 
 struct AMaterialExpression {
@@ -868,6 +897,7 @@ public:
   DECL_UOBJ(UMaterialExpressionSphereMask, UMaterialExpression);
   UPROP_NOINIT(FExpressionInput, A);
   UPROP_NOINIT(FExpressionInput, B);
+  UPROP_NOINIT(FExpressionInput, Radius);
   UPROP(float, AttenuationRadius, 256.);
   UPROP(float, HardnessPercent, 100.);
   bool RegisterProperty(FPropertyTag* property) override;
@@ -921,21 +951,6 @@ public:
   void ExportExpression(AMaterialExpression& output) override;
 };
 
-enum LayerBlendType {
-  LB_AlphaBlend = 0,
-  LB_HeightBlend
-};
-
-struct FLandscapeLayerBlendInput {
-  FName LayerName;
-  LayerBlendType BlendType;
-  FExpressionInput LayerInput;
-  FExpressionInput HeightInput;
-  float PreviewWeight = 0.f;
-
-  void LoadFromPropertyValue(const FPropertyValue* v);
-};
-
 class UMaterialExpressionLandscapeLayerBlend : public UMaterialExpression {
 public:
   DECL_UOBJ(UMaterialExpressionLandscapeLayerBlend, UMaterialExpression);
@@ -963,9 +978,18 @@ public:
   DECL_UOBJ(UMaterialExpressionTextureSample, UMaterialExpression);
   UPROP(UObject*, Texture, nullptr);
   UPROP_NOINIT(FExpressionInput, Coordinates);
+  UPROP_NOINIT(FExpressionInput, TextureObject);
   bool RegisterProperty(FPropertyTag* property) override;
   void AcceptVisitor(UMaterialExpressionViewVisitor& visitor) override;
   void ExportExpression(AMaterialExpression& output) override;
+};
+
+class UMaterialExpressionTextureObject : public UMaterialExpression {
+public:
+  DECL_UOBJ(UMaterialExpressionTextureObject, UMaterialExpression);
+  UPROP(UObject*, Texture, nullptr);
+  bool RegisterProperty(FPropertyTag* property) override;
+  void AcceptVisitor(UMaterialExpressionViewVisitor& visitor) override;
 };
 
 class UMaterialExpressionDepthBiasBlend : public UMaterialExpressionTextureSample {
@@ -1109,4 +1133,47 @@ public:
 class UMaterialExpressionWorldPosition : public UMaterialExpression {
 public:
   DECL_UOBJ(UMaterialExpressionWorldPosition, UMaterialExpression);
+};
+
+class UMaterialExpressionFunctionInput : public UMaterialExpression {
+public:
+  DECL_UOBJ(UMaterialExpressionFunctionInput, UMaterialExpression);
+
+  UPROP_NOINIT(FString, InputName);
+  UPROP(EFunctionInputType, InputType, EFunctionInputType::FunctionInput_Vector3);
+  UPROP_NOINIT(FExpressionInput, Preview);
+  UPROP_NOINIT(FVector4, PreviewValue);
+  UPROP(bool, bUsePreviewValueAsDefault, false);
+  UPROP(int32, SortPriority, 32);
+  UPROP(UMaterialFunction*, Function, nullptr);
+
+  bool RegisterProperty(FPropertyTag* property) override;
+  void AcceptVisitor(UMaterialExpressionViewVisitor& visitor) override;
+};
+
+class UMaterialExpressionFunctionOutput : public UMaterialExpression {
+public:
+  DECL_UOBJ(UMaterialExpressionFunctionOutput, UMaterialExpression);
+
+  UPROP_NOINIT(FString, OutputName);
+  UPROP_NOINIT(FExpressionInput, A);
+  UPROP(int32, SortPriority, 32);
+  UPROP(UMaterialFunction*, Function, nullptr);
+
+  bool RegisterProperty(FPropertyTag* property) override;
+  void AcceptVisitor(UMaterialExpressionViewVisitor& visitor) override;
+};
+
+class UMaterialExpressionMaterialFunctionCall : public UMaterialExpression {
+public:
+  DECL_UOBJ(UMaterialExpressionMaterialFunctionCall, UMaterialExpression);
+
+  UPROP(UMaterialFunction*, MaterialFunction, nullptr);
+  UPROP_NOINIT(std::vector<FFunctionExpressionInput>, FunctionInputs);
+  UPROP_NOINIT(std::vector<FFunctionExpressionOutput>, FunctionOutputs);
+  UPROP(UMaterialFunction*, Function, nullptr);
+  UPROP(UMaterial*, Material, nullptr);
+
+  bool RegisterProperty(FPropertyTag* property) override;
+  void AcceptVisitor(UMaterialExpressionViewVisitor& visitor) override;
 };

@@ -2,6 +2,7 @@
 #include "Tera/FObjectResource.h"
 #include "Tera/UClass.h"
 #include "Tera/Cast.h"
+#include "Tera/UTexture.h"
 
 namespace {
   const char* VSEP = "\t";
@@ -23,7 +24,7 @@ Super::AcceptVisitor(visitor)
 #define SET_INPUT(...)\
 visitor.SetInput({ __VA_ARGS__ });
 
-FExpressionInput::FExpressionInput(FPropertyTag * property)
+FExpressionInput::FExpressionInput(const FPropertyTag * property)
 {
   if (property && property->Value)
   {
@@ -60,7 +61,7 @@ FExpressionInput::FExpressionInput(FPropertyTag * property)
       {
         OutputIndex = tag->GetInt();
       }
-      else if (tagName == "InputName")
+      else if (tagName == "InputName" || tagName == "OutputName")
       {
         InputName = tag->GetString();
       }
@@ -519,6 +520,22 @@ UMaterialExpression* UMaterialExpression::StaticFactory(FObjectExport* exp)
   else if (c == UMaterialExpressionLandscapeLayerBlend::StaticClassName())
   {
     result = new UMaterialExpressionLandscapeLayerBlend(exp);
+  }
+  else if (c == UMaterialExpressionFunctionInput::StaticClassName())
+  {
+    result = new UMaterialExpressionFunctionInput(exp);
+  }
+  else if (c == UMaterialExpressionFunctionOutput::StaticClassName())
+  {
+    result = new UMaterialExpressionFunctionOutput(exp);
+  }
+  else if (c == UMaterialExpressionMaterialFunctionCall::StaticClassName())
+  {
+    result = new UMaterialExpressionMaterialFunctionCall(exp);
+  }
+  else if (c == UMaterialExpressionTextureObject::StaticClassName())
+  {
+    result = new UMaterialExpressionTextureObject(exp);
   }
   else
   {
@@ -1892,6 +1909,7 @@ bool UMaterialExpressionSphereMask::RegisterProperty(FPropertyTag* property)
   SUPER_REGISTER_PROP();
   REGISTER_INPUT(A);
   REGISTER_INPUT(B);
+  REGISTER_INPUT(Radius);
   REGISTER_FLOAT_PROP(AttenuationRadius);
   REGISTER_FLOAT_PROP(HardnessPercent);
   return false;
@@ -1900,7 +1918,7 @@ bool UMaterialExpressionSphereMask::RegisterProperty(FPropertyTag* property)
 void UMaterialExpressionSphereMask::AcceptVisitor(UMaterialExpressionViewVisitor& visitor)
 {
   SUPER_ACCEPT();
-  SET_INPUT(A, B);
+  SET_INPUT(A, B, Radius);
   visitor.SetValue(FString::Sprintf("AttRadius:%f\nHrdsPercent:%f", AttenuationRadius, HardnessPercent));
 }
 
@@ -1909,6 +1927,7 @@ void UMaterialExpressionSphereMask::ExportExpression(AMaterialExpression& output
   Super::ExportExpression(output);
   output.Parameters.emplace_back(A);
   output.Parameters.emplace_back(B);
+  output.Parameters.emplace_back(Radius);
   if (AttenuationRadiusProperty)
   output.Parameters.emplace_back(AExpressionInput::MakeExpressionInput(P_AttenuationRadius, AttenuationRadius));
   if (HardnessPercentProperty)
@@ -2082,6 +2101,7 @@ bool UMaterialExpressionTextureSample::RegisterProperty(FPropertyTag* property)
 {
   SUPER_REGISTER_PROP();
   REGISTER_INPUT(Coordinates);
+  REGISTER_INPUT(TextureObject);
   REGISTER_OBJ_PROP(Texture);
   return false;
 }
@@ -2089,8 +2109,20 @@ bool UMaterialExpressionTextureSample::RegisterProperty(FPropertyTag* property)
 void UMaterialExpressionTextureSample::AcceptVisitor(UMaterialExpressionViewVisitor& visitor)
 {
   SUPER_ACCEPT();
-  SET_INPUT(Coordinates);
-  visitor.SetValue(Texture ? Texture->GetObjectNameString() : "NULL");
+  bool needsTexture = true;
+  if (TextureObject.Expression)
+  {
+    SET_INPUT(Coordinates, TextureObject);
+    needsTexture = false;
+  }
+  else if (Coordinates.Expression)
+  {
+    SET_INPUT(Coordinates);
+  }
+  if (needsTexture)
+  {
+    visitor.SetValue(Texture ? Texture->GetObjectNameString() : "NULL");
+  }
 }
 
 void UMaterialExpressionTextureSample::ExportExpression(AMaterialExpression& output)
@@ -2277,4 +2309,197 @@ void FLandscapeLayerBlendInput::LoadFromPropertyValue(const FPropertyValue* valu
       HeightInput.CustomDescription = "HeightIn";
     }
   }
+}
+
+bool UMaterialExpressionFunctionInput::RegisterProperty(FPropertyTag* property)
+{
+  SUPER_REGISTER_PROP();
+  REGISTER_STR_PROP(InputName);
+  REGISTER_ENUM_PROP(InputType, EFunctionInputType);
+  REGISTER_INPUT(Preview);
+  REGISTER_VEC4_PROP(PreviewValue);
+  REGISTER_INT_PROP(SortPriority);
+  REGISTER_TOBJ_PROP(Function, UMaterialFunction*);
+  REGISTER_BOOL_PROP(bUsePreviewValueAsDefault);
+  return false;
+}
+
+void UMaterialExpressionFunctionInput::AcceptVisitor(UMaterialExpressionViewVisitor& visitor)
+{
+  SUPER_ACCEPT();
+  if (Preview.Expression)
+  {
+    SET_INPUT(Preview);
+  }
+  visitor.SetTitle("FuncIn: " + InputName);
+  FString inType = "Type: ";
+  FString prevVal;
+  switch (InputType)
+  {
+  case FunctionInput_Scalar:
+    inType += "Scalar";
+    if (PreviewValueProperty)
+    {
+      prevVal = FString::Sprintf("Preview: %.3f", PreviewValue.X);
+    }
+    break;
+  case FunctionInput_Vector2:
+    inType += "Vector2D";
+    if (PreviewValueProperty)
+    {
+      prevVal = FString::Sprintf("Preview: (%.2f, %.2f)", PreviewValue.X, PreviewValue.Y);
+    }
+    break;
+  case FunctionInput_Vector3:
+    inType += "Vector";
+    if (PreviewValueProperty)
+    {
+      prevVal = FString::Sprintf("Preview: (%.2f, %.2f, %.2f)", PreviewValue.X, PreviewValue.Y, PreviewValue.Z);
+    }
+    break;
+  case FunctionInput_Vector4:
+    inType += "Vector4";
+    if (PreviewValueProperty)
+    {
+      prevVal = FString::Sprintf("Preview: (%.2f, %.2f, %.2f, %.2f)", PreviewValue.X, PreviewValue.Y, PreviewValue.Z, PreviewValue.W);
+    }
+    break;
+  case FunctionInput_Texture2D:
+    inType += "Texture2D";
+    break;
+  case FunctionInput_TextureCube:
+    inType += "TextureCube";
+    break;
+  case FunctionInput_StaticBool:
+    inType += "Bool";
+    if (PreviewValueProperty)
+    {
+      prevVal = FString::Sprintf("Preview: %s", PreviewValue.X ? "true" : "false");
+    }
+    break;
+  default:
+    inType += "Unk";
+    break;
+  }
+  FString val = inType + FString::Sprintf("\nUsePreviewAsDef = %s", bUsePreviewValueAsDefault ? "true" : "false");
+  if (prevVal.Length())
+  {
+    val += "\n";
+    val += prevVal;
+  }
+  visitor.SetValue(val);
+}
+
+bool UMaterialExpressionFunctionOutput::RegisterProperty(FPropertyTag* property)
+{
+  SUPER_REGISTER_PROP();
+  REGISTER_STR_PROP(OutputName);
+  REGISTER_INPUT(A);
+  REGISTER_INT_PROP(SortPriority);
+  REGISTER_TOBJ_PROP(Function, UMaterialFunction*);
+  return false;
+}
+
+void UMaterialExpressionFunctionOutput::AcceptVisitor(UMaterialExpressionViewVisitor& visitor)
+{
+  SUPER_ACCEPT();
+  SET_INPUT(A);
+  visitor.SetTitle("FuncOut: " + OutputName);
+  visitor.SetIsFinalNode();
+}
+
+void FFunctionExpressionInput::LoadFromPropertyValue(const FPropertyValue* value)
+{
+  for (const FPropertyValue* v : value->GetArray())
+  {
+    if (v->GetPropertyTagPtr()->Name == "ExpressionInput")
+    {
+      ExpressionInput = Cast<UMaterialExpression>(v->GetPropertyTagPtr()->Value->GetObjectValuePtr());
+    }
+    else if (v->GetPropertyTagPtr()->Name == "ExpressionInputId")
+    {
+      ExpressionInputId = v->GetPropertyTagPtr()->GetGuid();
+    }
+    else if (v->GetPropertyTagPtr()->Name == "Input")
+    {
+      Input = FExpressionInput(v->GetPropertyTagPtr());
+    }
+  }
+}
+
+void FFunctionExpressionOutput::LoadFromPropertyValue(const FPropertyValue* value)
+{
+  for (const FPropertyValue* v : value->GetArray())
+  {
+    if (v->GetPropertyTagPtr()->Name == "ExpressionOutput")
+    {
+      ExpressionOutput = Cast<UMaterialExpression>(v->GetPropertyTagPtr()->Value->GetObjectValuePtr());
+    }
+    else if (v->GetPropertyTagPtr()->Name == "ExpressionOutputId")
+    {
+      ExpressionOutputId = v->GetPropertyTagPtr()->GetGuid();
+    }
+    else if (v->GetPropertyTagPtr()->Name == "Output")
+    {
+      Output = FExpressionInput(v->GetPropertyTagPtr());
+    }
+  }
+}
+
+bool UMaterialExpressionMaterialFunctionCall::RegisterProperty(FPropertyTag* property)
+{
+  SUPER_REGISTER_PROP();
+  REGISTER_TOBJ_PROP(MaterialFunction, UMaterialFunction*);
+  if (PROP_IS(property, FunctionInputs))
+  {
+    FunctionInputsProperty = property;
+    for (FPropertyValue* v : FunctionInputsProperty->GetArray())
+    {
+      FunctionInputs.emplace_back().LoadFromPropertyValue(v);
+    }
+    return true;
+  }
+  if (PROP_IS(property, FunctionOutputs))
+  {
+    FunctionOutputsProperty = property;
+    for (FPropertyValue* v : FunctionOutputsProperty->GetArray())
+    {
+      FunctionOutputs.emplace_back().LoadFromPropertyValue(v);
+    }
+    return true;
+  }
+  REGISTER_TOBJ_PROP(Function, UMaterialFunction*);
+  REGISTER_TOBJ_PROP(Material, UMaterial*);
+  return false;
+}
+
+void UMaterialExpressionMaterialFunctionCall::AcceptVisitor(UMaterialExpressionViewVisitor& visitor)
+{
+  SUPER_ACCEPT();
+  std::vector<FExpressionInput> inputs;
+  for (const FFunctionExpressionInput& i : FunctionInputs)
+  {
+    inputs.emplace_back(i.Input);
+  }
+  visitor.SetInput(inputs);
+  inputs.clear();
+  for (const FFunctionExpressionOutput& i : FunctionOutputs)
+  {
+    inputs.emplace_back(i.Output);
+  }
+  visitor.SetOutput(inputs);
+  visitor.SetTitle("MFCall: " + MaterialFunction->GetObjectNameString());
+}
+
+bool UMaterialExpressionTextureObject::RegisterProperty(FPropertyTag* property)
+{
+  SUPER_REGISTER_PROP();
+  REGISTER_TOBJ_PROP(Texture, UTexture2D*);
+  return false;
+}
+
+void UMaterialExpressionTextureObject::AcceptVisitor(UMaterialExpressionViewVisitor& visitor)
+{
+  SUPER_ACCEPT();
+  visitor.SetValue(Texture ? Texture->GetObjectNameString() : "NULL");
 }

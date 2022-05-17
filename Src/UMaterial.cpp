@@ -493,9 +493,13 @@ public:
       }
     }
   }
+  void SetOutput(const std::vector<FExpressionInput>& input) override
+  {}
   void SetEditorPosition(int32 x, int32 y) override
   {}
   void SetEditorSize(int32 x, int32 y) override
+  {}
+  void SetIsFinalNode(bool flag = true) override
   {}
 
   UMaterialExpression* SearchExpression = nullptr;

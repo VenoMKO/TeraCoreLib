@@ -435,3 +435,18 @@ enum ReverbPreset
   REVERB_Plate = 22,
   REVERB_MAX = 23,
 };
+
+enum EFunctionInputType {
+  FunctionInput_Scalar,
+  FunctionInput_Vector2,
+  FunctionInput_Vector3,
+  FunctionInput_Vector4,
+  FunctionInput_Texture2D,
+  FunctionInput_TextureCube,
+  FunctionInput_StaticBool
+};
+
+enum LayerBlendType {
+  LB_AlphaBlend = 0,
+  LB_HeightBlend
+};
