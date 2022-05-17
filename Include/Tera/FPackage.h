@@ -306,6 +306,19 @@ public:
     return Exports[i];
   }
 
+  inline bool IsValidObjectIndex(PACKAGE_INDEX index) const
+  {
+    if (index > 0)
+    {
+      return (index - 1) < Exports.size();
+    }
+    else if (index < 0)
+    {
+      return (-index - 1) < Imports.size();
+    }
+    return false;
+  }
+
   // Add an object to package imports. Returns true if added
   bool AddImport(UObject* object, FObjectImport*& output);
 
