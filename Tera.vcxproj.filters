@@ -210,6 +210,9 @@
     <ClInclude Include="Include\Tera\UInstancedFoliageActor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Tera\UObjectFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Core.cpp">

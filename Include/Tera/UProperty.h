@@ -6,7 +6,7 @@ struct FPropertyTag;
 struct FPropertyValue;
 class UProperty : public UField {
 public:
-  DECL_UOBJ(UProperty, UField);
+  DECL_ABSTRACT_UOBJ(UProperty, UField);
   DECL_CLASS_CAST(UProperty);
 
   void Serialize(FStream& s) override;

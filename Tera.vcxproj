@@ -303,6 +303,7 @@
     <ClInclude Include="Include\Tera\UModel.h" />
     <ClInclude Include="Include\Tera\UNames.h" />
     <ClInclude Include="Include\Tera\UObject.h" />
+    <ClInclude Include="Include\Tera\UObjectFactory.h" />
     <ClInclude Include="Include\Tera\UObjectHelpers.h" />
     <ClInclude Include="Include\Tera\UObjectRedirector.h" />
     <ClInclude Include="Include\Tera\UObjectReferencer.h" />

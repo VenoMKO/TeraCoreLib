@@ -1,4 +1,5 @@
 #include "Tera/UObject.h"
+#include "Tera/UObjectFactory.h"
 #include "Tera/FObjectResource.h"
 #include "Tera/FName.h"
 
@@ -34,6 +35,9 @@
 #include "Tera/UTerrain.h"
 #include "Tera/ULight.h"
 
+#define TRANSLATION_UNIT_VALIDATION 1
+std::map<std::size_t, UObjectFactory::TCtor> UObjectFactory::RegisteredClasses;
+
 UObject* UObject::Object(FObjectExport* exp)
 {
   const FString c = exp->GetClassNameString();
@@ -41,558 +45,310 @@ UObject* UObject::Object(FObjectExport* exp)
   {
     return new UClass(exp, false);
   }
-  if (c == UPackage::StaticClassName())
-  {
-    return new UPackage(exp);
-  }
-  if (c == UTexture2D::StaticClassName())
-  {
-    return new UTexture2D(exp);
-  }
-  if (c == UTextureCube::StaticClassName())
-  {
-    return new UTextureCube(exp);
-  }
-  if (c == UTextureFlipBook::StaticClassName())
-  {
-    return new UTextureFlipBook(exp);
-  }
-  if (c == UShadowMapTexture2D::StaticClassName())
-  {
-    return new UShadowMapTexture2D(exp);
-  }
-  if (c == ULightMapTexture2D::StaticClassName())
-  {
-    return new ULightMapTexture2D(exp);
-  }
-  if (c == USkeletalMesh::StaticClassName())
-  {
-    return new USkeletalMesh(exp);
-  }
-  if (c == UMaterial::StaticClassName())
-  {
-    return new UMaterial(exp);
-  }
-  if (c == UMaterialInstance::StaticClassName())
-  {
-    return new UMaterialInstance(exp);
-  }
-  if (c == UMaterialInstanceConstant::StaticClassName())
-  {
-    return new UMaterialInstanceConstant(exp);
-  }
-  if (c == UStaticMesh::StaticClassName())
-  {
-    return new UStaticMesh(exp);
-  }
-  if (c == URB_BodySetup::StaticClassName())
-  {
-    return new URB_BodySetup(exp);
-  }
-  if (c == UPhysicsAssetInstance::StaticClassName())
-  {
-    return new UPhysicsAssetInstance(exp);
-  }
-  if (c == USpeedTree::StaticClassName())
-  {
-    return new USpeedTree(exp);
-  }
-  if (c == UPrefab::StaticClassName())
-  {
-    return new UPrefab(exp);
-  }
-  if (c == UModel::StaticClassName())
-  {
-    return new UModel(exp);
-  }
-  if (c == UPolys::StaticClassName())
-  {
-    return new UPolys(exp);
-  }
-  if (c == UAeroVolume::StaticClassName())
-  {
-    return new UAeroVolume(exp);
-  }
-  if (c == UAeroInnerVolume::StaticClassName())
-  {
-    return new UAeroInnerVolume(exp);
-  }
-  if (c == UReverbVolume::StaticClassName())
-  {
-    return new UReverbVolume(exp);
-  }
-  if (c == UPostProcessVolume::StaticClassName())
-  {
-    return new UPostProcessVolume(exp);
-  }
-  if (c == UActor::StaticClassName())
-  {
-    return new UActor(exp);
-  }
-  if (c == UTerrain::StaticClassName())
-  {
-    return new UTerrain(exp);
-  }
-  if (c == UTerrainWeightMapTexture::StaticClassName())
-  {
-    return new UTerrainWeightMapTexture(exp);
-  }
-  if (c == UTerrainMaterial::StaticClassName())
-  {
-    return new UTerrainMaterial(exp);
-  }
-  if (c == UTerrainLayerSetup::StaticClassName())
-  {
-    return new UTerrainLayerSetup(exp);
-  }
-  if (c == UBrush::StaticClassName())
-  {
-    return new UBrush(exp);
-  }
-  if (c == UBrushComponent::StaticClassName())
-  {
-    return new UBrushComponent(exp);
-  }
-  if (c == ULevel::StaticClassName())
-  {
-    return new ULevel(exp);
-  }
-  if (c == ULevelStreamingAlwaysLoaded::StaticClassName())
-  {
-    return new ULevelStreamingAlwaysLoaded(exp);
-  }
-  if (c == ULevelStreamingDistance::StaticClassName())
-  {
-    return new ULevelStreamingDistance(exp);
-  }
-  if (c == ULevelStreamingKismet::StaticClassName())
-  {
-    return new ULevelStreamingKismet(exp);
-  }
-  if (c == ULevelStreamingPersistent::StaticClassName())
-  {
-    return new ULevelStreamingPersistent(exp);
-  }
-  if (c == ULevelStreamingVolume::StaticClassName())
-  {
-    return new ULevelStreamingVolume(exp);
-  }
-  if (c == UBlockingVolume::StaticClassName())
-  {
-    return new UBlockingVolume(exp);
-  }
-  if (c == UStaticMeshActor::StaticClassName())
-  {
-    return new UStaticMeshActor(exp);
-  }
-  if (c == USkeletalMeshActor::StaticClassName())
-  {
-    return new USkeletalMeshActor(exp);
-  }
-  if (c == USkeletalMeshCinematicActor::StaticClassName())
-  {
-    return new USkeletalMeshCinematicActor(exp);
-  }
-  if (c == USkeletalMeshActorMAT::StaticClassName())
-  {
-    return new USkeletalMeshActorMAT(exp);
-  }
-  if (c == USpeedTreeActor::StaticClassName())
-  {
-    return new USpeedTreeActor(exp);
-  }
-  if (c == ULight::StaticClassName())
-  {
-    return new ULight(exp);
-  }
-  if (c == UPointLight::StaticClassName())
-  {
-    return new UPointLight(exp);
-  }
-  if (c == UPointLightMovable::StaticClassName())
-  {
-    return new UPointLightMovable(exp);
-  }
-  if (c == UPointLightToggleable::StaticClassName())
-  {
-    return new UPointLightToggleable(exp);
-  }
-  if (c == USpotLight::StaticClassName())
-  {
-    return new USpotLight(exp);
-  }
-  if (c == USpotLightMovable::StaticClassName())
-  {
-    return new USpotLightMovable(exp);
-  }
-  if (c == USpotLightToggleable::StaticClassName())
-  {
-    return new USpotLightToggleable(exp);
-  }
-  if (c == UDirectionalLight::StaticClassName())
-  {
-    return new UDirectionalLight(exp);
-  }
-  if (c == UDirectionalLightToggleable::StaticClassName())
-  {
-    return new UDirectionalLightToggleable(exp);
-  }
-  if (c == USkyLight::StaticClassName())
-  {
-    return new USkyLight(exp);
-  }
-  if (c == USkyLightToggleable::StaticClassName())
-  {
-    return new USkyLightToggleable(exp);
-  }
-  if (c == UInterpActor::StaticClassName())
-  {
-    return new UInterpActor(exp);
-  }
-  if (c == UEmitter::StaticClassName())
-  {
-    return new UEmitter(exp);
-  }
-  if (c == UHeightFog::StaticClassName())
-  {
-    return new UHeightFog(exp);
-  }
-  if (c == UPrefabInstance::StaticClassName())
-  {
-    return new UPrefabInstance(exp);
-  }
-  if (c == UAnimSet::StaticClassName())
-  {
-    return new UAnimSet(exp);
-  }
-  if (c == UAnimSequence::StaticClassName())
-  {
-    return new UAnimSequence(exp);
-  }
-  if (c == USoundNodeWave::StaticClassName())
-  {
-    return new USoundNodeWave(exp);
-  }
-  if (c == USoundNodeAmbient::StaticClassName())
-  {
-    return new USoundNodeAmbient(exp);
-  }
-  if (c == USoundNodeAttenuation::StaticClassName())
-  {
-    return new USoundNodeAttenuation(exp);
-  }
-  if (c == USoundNodeAmbientNonLoop::StaticClassName())
-  {
-    return new USoundNodeAmbientNonLoop(exp);
-  }
-  if (c == USoundNodeAmbientNonLoopToggle::StaticClassName())
-  {
-    return new USoundNodeAmbientNonLoopToggle(exp);
-  }
-  if (c == USoundNodeConcatenator::StaticClassName())
-  {
-    return new USoundNodeConcatenator(exp);
-  }
-  if (c == USoundNodeLooping::StaticClassName())
-  {
-    return new USoundNodeLooping(exp);
-  }
-  if (c == USoundNodeMixer::StaticClassName())
-  {
-    return new USoundNodeMixer(exp);
-  }
-  if (c == USoundNodeModulator::StaticClassName())
-  {
-    return new USoundNodeModulator(exp);
-  }
-  if (c == USoundNodeRandom::StaticClassName())
-  {
-    return new USoundNodeRandom(exp);
-  }
-  if (c == USoundCue::StaticClassName())
-  {
-    return new USoundCue(exp);
-  }
-  if (c == UField::StaticClassName())
-  {
-    return new UField(exp);
-  }
-  if (c == UStruct::StaticClassName())
-  {
-    return new UStruct(exp);
-  }
-  if (c == UScriptStruct::StaticClassName())
-  {
-    return new UScriptStruct(exp);
-  }
-  if (c == UState::StaticClassName())
-  {
-    return new UState(exp);
-  }
-  if (c == UEnum::StaticClassName())
-  {
-    return new UEnum(exp);
-  }
-  if (c == UConst::StaticClassName())
-  {
-    return new UConst(exp);
-  }
-  if (c == UFunction::StaticClassName())
-  {
-    return new UFunction(exp);
-  }
-  if (c == UTextBuffer::StaticClassName())
-  {
-    return new UTextBuffer(exp);
-  }
-  if (c == UIntProperty::StaticClassName())
-  {
-    return new UIntProperty(exp);
-  }
-  if (c == UBoolProperty::StaticClassName())
-  {
-    return new UBoolProperty(exp);
-  }
-  if (c == UByteProperty::StaticClassName())
-  {
-    return new UByteProperty(exp);
-  }
-  if (c == UFloatProperty::StaticClassName())
-  {
-    return new UFloatProperty(exp);
-  }
-  if (c == UObjectProperty::StaticClassName())
-  {
-    return new UObjectProperty(exp);
-  }
-  if (c == UClassProperty::StaticClassName())
-  {
-    return new UClassProperty(exp);
-  }
-  if (c == UComponentProperty::StaticClassName())
-  {
-    return new UComponentProperty(exp);
-  }
-  if (c == UNameProperty::StaticClassName())
-  {
-    return new UNameProperty(exp);
-  }
-  if (c == UStrProperty::StaticClassName())
-  {
-    return new UStrProperty(exp);
-  }
-  if (c == UStructProperty::StaticClassName())
-  {
-    return new UStructProperty(exp);
-  }
-  if (c == UArrayProperty::StaticClassName())
-  {
-    return new UArrayProperty(exp);
-  }
-  if (c == UMapProperty::StaticClassName())
-  {
-    return new UMapProperty(exp);
-  }
-  if (c == UInterfaceProperty::StaticClassName())
-  {
-    return new UInterfaceProperty(exp);
-  }
-  if (c == UDelegateProperty::StaticClassName())
-  {
-    return new UDelegateProperty(exp);
-  }
-  if (c == UMetaData::StaticClassName())
-  {
-    return new UMetaData(exp);
-  }
-  if (c == UObjectRedirector::StaticClassName())
-  {
-    return new UObjectRedirector(exp);
-  }
-  if (c == UObjectReferencer::StaticClassName())
-  {
-    return new UObjectReferencer(exp);
-  }
-  if (c == UPersistentCookerData::StaticClassName())
-  {
-    return new UPersistentCookerData(exp);
-  }
-  if (c == UDynamicSMActor::StaticClassName())
-  {
-    return new UDynamicSMActor(exp);
-  }
-  if (c == UComponent::StaticClassName())
+
+  if ((c.Find("Distribution") != std::string::npos) ||
+      (c.StartsWith("UIComp_") || c == "RB_Handle"))
   {
     return new UComponent(exp);
   }
-  if (c == UStaticMeshComponent::StaticClassName())
-  {
-    return new UStaticMeshComponent(exp);
-  }
-  if (c == USkeletalMeshComponent::StaticClassName())
-  {
-    return new USkeletalMeshComponent(exp);
-  }
-  if (c == USpeedTreeComponent::StaticClassName())
-  {
-    return new USpeedTreeComponent(exp);
-  }
-  if (c == ULightComponent::StaticClassName())
-  {
-    return new ULightComponent(exp);
-  }
-  if (c == UPointLightComponent::StaticClassName())
-  {
-    return new UPointLightComponent(exp);
-  }
-  if (c == USpotLightComponent::StaticClassName())
-  {
-    return new USpotLightComponent(exp);
-  }
-  if (c == UDirectionalLightComponent::StaticClassName())
-  {
-    return new UDirectionalLightComponent(exp);
-  }
-  if (c == UDominantDirectionalLightComponent::StaticClassName())
-  {
-    return new UDominantDirectionalLightComponent(exp);
-  }
-  if (c == UDominantSpotLightComponent::StaticClassName())
-  {
-    return new UDominantSpotLightComponent(exp);
-  }
-  if (c == USkyLightComponent::StaticClassName())
-  {
-    return new USkyLightComponent(exp);
-  }
-  if (c == UHeightFogComponent::StaticClassName())
-  {
-    return new UHeightFogComponent(exp);
-  }
-  if (c == UAudioComponent::StaticClassName())
-  {
-    return new UAudioComponent(exp);
-  }
-  if (c == UAmbientSound::StaticClassName())
-  {
-    return new UAmbientSound(exp);
-  }
-  if (c == UAmbientSoundMovable::StaticClassName())
-  {
-    return new UAmbientSoundMovable(exp);
-  }
-  if (c == UAmbientSoundSimple::StaticClassName())
-  {
-    return new UAmbientSoundSimple(exp);
-  }
-  if (c == UAmbientSoundNonLoop::StaticClassName())
-  {
-    return new UAmbientSoundNonLoop(exp);
-  }
-  if (c == UAmbientSoundSimpleToggleable::StaticClassName())
-  {
-    return new UAmbientSoundSimpleToggleable(exp);
-  }
-  if (c == UAmbientSoundNonLoopingToggleable::StaticClassName())
-  {
-    return new UAmbientSoundNonLoopingToggleable(exp);
-  }
-  if (c == UDistributionFloatConstant::StaticClassName())
-  {
-    return new UDistributionFloatConstant(exp);
-  }
-  if (c == UDistributionFloatUniform::StaticClassName())
-  {
-    return new UDistributionFloatUniform(exp);
-  }
-  if (c == ULightmassImportanceVolume::StaticClassName())
-  {
-    return new ULightmassImportanceVolume(exp);
-  }
-  if (c == ULandscape::StaticClassName())
-  {
-    return new ULandscape(exp);
-  }
-  if (c == ULandscapeComponent::StaticClassName())
-  {
-    return new ULandscapeComponent(exp);
-  }
-  if (c == ULandscapeLayerInfoObject::StaticClassName())
-  {
-    return new ULandscapeLayerInfoObject(exp);
-  }
-  if (c == UMaterialFunction::StaticClassName())
-  {
-    return new UMaterialFunction(exp);
-  }
-  if (c == UInstancedFoliageActor::StaticClassName())
-  {
-    return new UInstancedFoliageActor(exp);
-  }
-#if IS_TERA_BUILD
-  if (c == US1LevelStreamingDistance::StaticClassName())
-  {
-    return new US1LevelStreamingDistance(exp);
-  }
-  if (c == US1LevelStreamingBaseLevel::StaticClassName())
-  {
-    return new US1LevelStreamingBaseLevel(exp);
-  }
-  if (c == US1LevelStreamingSound::StaticClassName())
-  {
-    return new US1LevelStreamingSound(exp);
-  }
-  if (c == US1LevelStreamingSuperLow::StaticClassName())
-  {
-    return new US1LevelStreamingSuperLow(exp);
-  }
-  if (c == US1LevelStreamingVOID::StaticClassName())
-  {
-    return new US1LevelStreamingVOID(exp);
-  }
-  if (c == US1WaterVolume::StaticClassName())
-  {
-    return new US1WaterVolume(exp);
-  }
-  if (c == US1MusicVolume::StaticClassName())
-  {
-    return new US1MusicVolume(exp);
-  }
-#endif
-#if IS_ASTELLIA_BUILD
-  if (c == UPAPostProcessVolume::StaticClassName())
-  {
-    return new UPAPostProcessVolume(exp);
-  }
-  if (c == UPASkeletalMeshActorMAT::StaticClassName())
-  {
-    return new UPASkeletalMeshActorMAT(exp);
-  }
-#endif
-  
-  // A fallback for unimplemented classes
-  // MaterialExpressions must be before the UComponent due to UMaterialExpressionComponentMask
-  if (c.StartsWith("MaterialExpression"))
-  {
-    return UMaterialExpression::StaticFactory(exp);
-  }
-  // Fallback for unimplemented components. *Component => UComponent
-  if ((c.Find(UComponent::StaticClassName()) != std::string::npos) ||
-      (c.Find("Distribution") != std::string::npos) ||
-       c.StartsWith("UIComp_") || c == "RB_Handle")
-  {
-    return new UComponent(exp);
-  }
+
 #if IS_ASTELLIA_BUILD
   if (c.StartsWith("PA") && (c.EndsWith("Agent") || c.EndsWith("Agent2")))
   {
     return new UComponent(exp);
   }
 #endif
-  // Fallback for all *Actor classes except components
+
+  if (UObject* result = UObjectFactory::Create(c, exp))
+  {
+    return result;
+  }
+
+  if (c.Find(UComponent::StaticClassName()) != std::string::npos)
+  {
+    return new UComponent(exp);
+  }
+
+  if (c.StartsWith("MaterialExpression"))
+  {
+    return new UMaterialExpression(exp);
+  }
+
   if (c.Find(NAME_Actor) != std::string::npos && c != NAME_ActorFactory)
   {
     return new UActor(exp);
   }
   return new UObject(exp);
 }
+
+bool UObjectFactory::Register(const char* className, TCtor ctor)
+{
+  size_t hash = std::hash<std::string>{}(className);
+  if (auto it = RegisteredClasses.find(hash); it == RegisteredClasses.end())
+  {
+    RegisteredClasses[hash] = ctor;
+    return true;
+  }
+  return false;
+}
+
+UObject* UObjectFactory::Create(const FString& className, FObjectExport* exp)
+{
+  size_t hash = std::hash<std::string>{}(className.UTF8());
+  if (auto it = RegisteredClasses.find(hash); it != RegisteredClasses.end())
+  {
+    return it->second(exp);
+  }
+  return nullptr;
+}
+
+// All impls must be in the same translation unit as the class map to prevent static initialization order fiasco
+
+IMPL_UOBJ(UActor); // UActor
+IMPL_UOBJ(UAeroInnerVolume); // UAeroInnerVolume
+IMPL_UOBJ(UAeroVolume); // UAeroVolume
+IMPL_UOBJ(UAmbientSound); // UAmbientSound
+IMPL_UOBJ(UAmbientSoundMovable); // UAmbientSoundMovable
+IMPL_UOBJ(UAmbientSoundNonLoop); // UAmbientSoundNonLoop
+IMPL_UOBJ(UAmbientSoundNonLoopingToggleable); // UAmbientSoundNonLoopingToggleable
+IMPL_UOBJ(UAmbientSoundSimple); // UAmbientSoundSimple
+IMPL_UOBJ(UAmbientSoundSimpleToggleable); // UAmbientSoundSimpleToggleable
+IMPL_UOBJ(UAnimSequence); // UAnimSequence
+IMPL_UOBJ(UAnimSet); // UAnimSet
+IMPL_UOBJ(UArrayProperty); // UArrayProperty
+IMPL_UOBJ(UAudioComponent); // UAudioComponent
+IMPL_UOBJ(UBlockingVolume); // UBlockingVolume
+IMPL_UOBJ(UBoolProperty); // UBoolProperty
+IMPL_UOBJ(UBrush); // UBrush
+IMPL_UOBJ(UBrushComponent); // UBrushComponent
+IMPL_UOBJ(UByteProperty); // UByteProperty
+IMPL_UOBJ(UClassProperty); // UClassProperty
+IMPL_UOBJ(UComponent); // UComponent
+IMPL_UOBJ(UComponentProperty); // UComponentProperty
+IMPL_UOBJ(UConst); // UConst
+IMPL_UOBJ(UDelegateProperty); // UDelegateProperty
+IMPL_UOBJ(UDirectionalLight); // UDirectionalLight
+IMPL_UOBJ(UDirectionalLightComponent); // UDirectionalLightComponent
+IMPL_UOBJ(UDirectionalLightToggleable); // UDirectionalLightToggleable
+IMPL_UOBJ(UDistributionFloatConstant); // UDistributionFloatConstant
+IMPL_UOBJ(UDistributionFloatUniform); // UDistributionFloatUniform
+IMPL_UOBJ(UDominantDirectionalLightComponent); // UDominantDirectionalLightComponent
+IMPL_UOBJ(UDominantSpotLightComponent); // UDominantSpotLightComponent
+IMPL_UOBJ(UDynamicSMActor); // UDynamicSMActor
+IMPL_UOBJ(UEmitter); // UEmitter
+IMPL_UOBJ(UEnum); // UEnum
+IMPL_UOBJ(UField); // UField
+IMPL_UOBJ(UFloatProperty); // UFloatProperty
+IMPL_UOBJ(UFunction); // UFunction
+IMPL_UOBJ(UHeightFog); // UHeightFog
+IMPL_UOBJ(UHeightFogComponent); // UHeightFogComponent
+IMPL_UOBJ(UInstancedFoliageActor); // UInstancedFoliageActor
+IMPL_UOBJ(UInterfaceProperty); // UInterfaceProperty
+IMPL_UOBJ(UInterpActor); // UInterpActor
+IMPL_UOBJ(UIntProperty); // UIntProperty
+IMPL_UOBJ(ULandscape); // ULandscape
+IMPL_UOBJ(ULandscapeComponent); // ULandscapeComponent
+IMPL_UOBJ(ULandscapeLayerInfoObject); // ULandscapeLayerInfoObject
+IMPL_UOBJ(ULevel); // ULevel
+IMPL_UOBJ(ULevelStreamingAlwaysLoaded); // ULevelStreamingAlwaysLoaded
+IMPL_UOBJ(ULevelStreamingDistance); // ULevelStreamingDistance
+IMPL_UOBJ(ULevelStreamingKismet); // ULevelStreamingKismet
+IMPL_UOBJ(ULevelStreamingPersistent); // ULevelStreamingPersistent
+IMPL_UOBJ(ULevelStreamingVolume); // ULevelStreamingVolume
+IMPL_UOBJ(ULight); // ULight
+IMPL_UOBJ(ULightComponent); // ULightComponent
+IMPL_UOBJ(ULightMapTexture2D); // ULightMapTexture2D
+IMPL_UOBJ(ULightmassImportanceVolume); // ULightmassImportanceVolume
+IMPL_UOBJ(UMapProperty); // UMapProperty
+IMPL_UOBJ(UMaterial); // UMaterial
+IMPL_UOBJ(UMaterialFunction); // UMaterialFunction
+IMPL_UOBJ(UMaterialInstance); // UMaterialInstance
+IMPL_UOBJ(UMaterialInstanceConstant); // UMaterialInstanceConstant
+IMPL_UOBJ(UMetaData); // UMetaData
+IMPL_UOBJ(UModel); // UModel
+IMPL_UOBJ(UNameProperty); // UNameProperty
+IMPL_UOBJ(UObjectProperty); // UObjectProperty
+IMPL_UOBJ(UObjectRedirector); // UObjectRedirector
+IMPL_UOBJ(UObjectReferencer); // UObjectReferencer
+IMPL_UOBJ(UPackage); // UPackage
+IMPL_UOBJ(UPersistentCookerData); // UPersistentCookerData
+IMPL_UOBJ(UPhysicsAssetInstance); // UPhysicsAssetInstance
+IMPL_UOBJ(UPointLight); // UPointLight
+IMPL_UOBJ(UPointLightComponent); // UPointLightComponent
+IMPL_UOBJ(UPointLightMovable); // UPointLightMovable
+IMPL_UOBJ(UPointLightToggleable); // UPointLightToggleable
+IMPL_UOBJ(UPolys); // UPolys
+IMPL_UOBJ(UPostProcessVolume); // UPostProcessVolume
+IMPL_UOBJ(UPrefab); // UPrefab
+IMPL_UOBJ(UPrefabInstance); // UPrefabInstance
+IMPL_UOBJ(URB_BodySetup); // URB_BodySetup
+IMPL_UOBJ(UReverbVolume); // UReverbVolume
+IMPL_UOBJ(UScriptStruct); // UScriptStruct
+IMPL_UOBJ(UShadowMapTexture2D); // UShadowMapTexture2D
+IMPL_UOBJ(USkeletalMesh); // USkeletalMesh
+IMPL_UOBJ(USkeletalMeshActor); // USkeletalMeshActor
+IMPL_UOBJ(USkeletalMeshActorMAT); // USkeletalMeshActorMAT
+IMPL_UOBJ(USkeletalMeshCinematicActor); // USkeletalMeshCinematicActor
+IMPL_UOBJ(USkeletalMeshComponent); // USkeletalMeshComponent
+IMPL_UOBJ(USkyLight); // USkyLight
+IMPL_UOBJ(USkyLightComponent); // USkyLightComponent
+IMPL_UOBJ(USkyLightToggleable); // USkyLightToggleable
+IMPL_UOBJ(USoundCue); // USoundCue
+IMPL_UOBJ(USoundNodeAmbient); // USoundNodeAmbient
+IMPL_UOBJ(USoundNodeAmbientNonLoop); // USoundNodeAmbientNonLoop
+IMPL_UOBJ(USoundNodeAmbientNonLoopToggle); // USoundNodeAmbientNonLoopToggle
+IMPL_UOBJ(USoundNodeAttenuation); // USoundNodeAttenuation
+IMPL_UOBJ(USoundNodeConcatenator); // USoundNodeConcatenator
+IMPL_UOBJ(USoundNodeLooping); // USoundNodeLooping
+IMPL_UOBJ(USoundNodeMixer); // USoundNodeMixer
+IMPL_UOBJ(USoundNodeModulator); // USoundNodeModulator
+IMPL_UOBJ(USoundNodeRandom); // USoundNodeRandom
+IMPL_UOBJ(USoundNodeWave); // USoundNodeWave
+IMPL_UOBJ(USpeedTree); // USpeedTree
+IMPL_UOBJ(USpeedTreeActor); // USpeedTreeActor
+IMPL_UOBJ(USpeedTreeComponent); // USpeedTreeComponent
+IMPL_UOBJ(USpotLight); // USpotLight
+IMPL_UOBJ(USpotLightComponent); // USpotLightComponent
+IMPL_UOBJ(USpotLightMovable); // USpotLightMovable
+IMPL_UOBJ(USpotLightToggleable); // USpotLightToggleable
+IMPL_UOBJ(UState); // UState
+IMPL_UOBJ(UStaticMesh); // UStaticMesh
+IMPL_UOBJ(UStaticMeshActor); // UStaticMeshActor
+IMPL_UOBJ(UStaticMeshComponent); // UStaticMeshComponent
+IMPL_UOBJ(UStrProperty); // UStrProperty
+IMPL_UOBJ(UStruct); // UStruct
+IMPL_UOBJ(UStructProperty); // UStructProperty
+IMPL_UOBJ(UTerrain); // UTerrain
+IMPL_UOBJ(UTerrainLayerSetup); // UTerrainLayerSetup
+IMPL_UOBJ(UTerrainMaterial); // UTerrainMaterial
+IMPL_UOBJ(UTerrainWeightMapTexture); // UTerrainWeightMapTexture
+IMPL_UOBJ(UTextBuffer); // UTextBuffer
+IMPL_UOBJ(UTexture2D); // UTexture2D
+IMPL_UOBJ(UTextureCube); // UTextureCube
+IMPL_UOBJ(UTextureFlipBook); // UTextureFlipBook
+
+#if IS_TERA_BUILD
+IMPL_UOBJ(US1LevelStreamingBaseLevel); // US1LevelStreamingBaseLevel
+IMPL_UOBJ(US1LevelStreamingDistance); // US1LevelStreamingDistance
+IMPL_UOBJ(US1LevelStreamingSound); // US1LevelStreamingSound
+IMPL_UOBJ(US1LevelStreamingSuperLow); // US1LevelStreamingSuperLow
+IMPL_UOBJ(US1LevelStreamingVOID); // US1LevelStreamingVOID
+IMPL_UOBJ(US1MusicVolume); // US1MusicVolume
+IMPL_UOBJ(US1WaterVolume); // US1WaterVolume
+#endif
+
+#if IS_ASTELLIA_BUILD
+IMPL_UOBJ(UPAPostProcessVolume); // UPAPostProcessVolume
+IMPL_UOBJ(UPASkeletalMeshActorMAT); // UPAPostProcessVolume
+#endif
+
+IMPL_UOBJ(UMaterialExpressionAbs); // UMaterialExpressionAbs
+IMPL_UOBJ(UMaterialExpressionAdd); // UMaterialExpressionAdd
+IMPL_UOBJ(UMaterialExpressionAntialiasedTextureMask); // UMaterialExpressionAntialiasedTextureMask
+IMPL_UOBJ(UMaterialExpressionAppendVector); // UMaterialExpressionAppendVector
+IMPL_UOBJ(UMaterialExpressionBumpOffset); // UMaterialExpressionBumpOffset
+IMPL_UOBJ(UMaterialExpressionCameraVector); // UMaterialExpressionCameraVector
+IMPL_UOBJ(UMaterialExpressionCameraWorldPosition); // UMaterialExpressionCameraWorldPosition
+IMPL_UOBJ(UMaterialExpressionCeil); // UMaterialExpressionCeil
+IMPL_UOBJ(UMaterialExpressionClamp); // UMaterialExpressionClamp
+IMPL_UOBJ(UMaterialExpressionComment); // UMaterialExpressionComment
+IMPL_UOBJ(UMaterialExpressionComponentMask); // UMaterialExpressionComponentMask
+IMPL_UOBJ(UMaterialExpressionCompound); // UMaterialExpressionCompound
+IMPL_UOBJ(UMaterialExpressionConstant); // UMaterialExpressionConstant
+IMPL_UOBJ(UMaterialExpressionConstant2Vector); // UMaterialExpressionConstant2Vector
+IMPL_UOBJ(UMaterialExpressionConstant3Vector); // UMaterialExpressionConstant3Vector
+IMPL_UOBJ(UMaterialExpressionConstant4Vector); // UMaterialExpressionConstant4Vector
+IMPL_UOBJ(UMaterialExpressionConstantBiasScale); // UMaterialExpressionConstantBiasScale
+IMPL_UOBJ(UMaterialExpressionConstantClamp); // UMaterialExpressionConstantClamp
+IMPL_UOBJ(UMaterialExpressionCosine); // UMaterialExpressionCosine
+IMPL_UOBJ(UMaterialExpressionCrossProduct); // UMaterialExpressionCrossProduct
+IMPL_UOBJ(UMaterialExpressionCustomTexture); // UMaterialExpressionCustomTexture
+IMPL_UOBJ(UMaterialExpressionDepthBiasBlend); // UMaterialExpressionDepthBiasBlend
+IMPL_UOBJ(UMaterialExpressionDepthBiasedAlpha); // UMaterialExpressionDepthBiasedAlpha
+IMPL_UOBJ(UMaterialExpressionDepthBiasedBlend); // UMaterialExpressionDepthBiasedBlend
+IMPL_UOBJ(UMaterialExpressionDepthOfFieldFunction); // UMaterialExpressionDepthOfFieldFunction
+IMPL_UOBJ(UMaterialExpressionDeriveNormalZ); // UMaterialExpressionDeriveNormalZ
+IMPL_UOBJ(UMaterialExpressionDesaturation); // UMaterialExpressionDesaturation
+IMPL_UOBJ(UMaterialExpressionDestColor); // UMaterialExpressionDestColor
+IMPL_UOBJ(UMaterialExpressionDestDepth); // UMaterialExpressionDestDepth
+IMPL_UOBJ(UMaterialExpressionDistance); // UMaterialExpressionDistance
+IMPL_UOBJ(UMaterialExpressionDivide); // UMaterialExpressionDivide
+IMPL_UOBJ(UMaterialExpressionDotProduct); // UMaterialExpressionDotProduct
+IMPL_UOBJ(UMaterialExpressionDynamicParameter); // UMaterialExpressionDynamicParameter
+IMPL_UOBJ(UMaterialExpressionFlipBookSample); // UMaterialExpressionFlipBookSample
+IMPL_UOBJ(UMaterialExpressionFloor); // UMaterialExpressionFloor
+IMPL_UOBJ(UMaterialExpressionFluidNormal); // UMaterialExpressionFluidNormal
+IMPL_UOBJ(UMaterialExpressionFmod); // UMaterialExpressionFmod
+IMPL_UOBJ(UMaterialExpressionFoliageImpulseDirection); // UMaterialExpressionFoliageImpulseDirection
+IMPL_UOBJ(UMaterialExpressionFoliageNormalizedRotationAxisAndAngle); // UMaterialExpressionFoliageNormalizedRotationAxisAndAngle
+IMPL_UOBJ(UMaterialExpressionFontSample); // UMaterialExpressionFontSample
+IMPL_UOBJ(UMaterialExpressionFontSampleParameter); // UMaterialExpressionFontSampleParameter
+IMPL_UOBJ(UMaterialExpressionFrac); // UMaterialExpressionFrac
+IMPL_UOBJ(UMaterialExpressionFresnel); // UMaterialExpressionFresnel
+IMPL_UOBJ(UMaterialExpressionFunctionInput); // UMaterialExpressionFunctionInput
+IMPL_UOBJ(UMaterialExpressionFunctionOutput); // UMaterialExpressionFunctionOutput
+IMPL_UOBJ(UMaterialExpressionIf); // UMaterialExpressionIf
+IMPL_UOBJ(UMaterialExpressionLandscapeLayerBlend); // UMaterialExpressionLandscapeLayerBlend
+IMPL_UOBJ(UMaterialExpressionLensFlareIntensity); // UMaterialExpressionLensFlareIntensity
+IMPL_UOBJ(UMaterialExpressionLensFlareOcclusion); // UMaterialExpressionLensFlareOcclusion
+IMPL_UOBJ(UMaterialExpressionLensFlareRadialDistance); // UMaterialExpressionLensFlareRadialDistance
+IMPL_UOBJ(UMaterialExpressionLensFlareRayDistance); // UMaterialExpressionLensFlareRayDistance
+IMPL_UOBJ(UMaterialExpressionLensFlareSourceDistance); // UMaterialExpressionLensFlareSourceDistance
+IMPL_UOBJ(UMaterialExpressionLightmapUVs); // UMaterialExpressionLightmapUVs
+IMPL_UOBJ(UMaterialExpressionLightmassReplace); // UMaterialExpressionLightmassReplace
+IMPL_UOBJ(UMaterialExpressionLightVector); // UMaterialExpressionLightVector
+IMPL_UOBJ(UMaterialExpressionLinearInterpolate); // UMaterialExpressionLinearInterpolate
+IMPL_UOBJ(UMaterialExpressionMaterialFunctionCall); // UMaterialExpressionMaterialFunctionCall
+IMPL_UOBJ(UMaterialExpressionMeshEmitterDynamicParameter); // UMaterialExpressionMeshEmitterDynamicParameter
+IMPL_UOBJ(UMaterialExpressionMeshEmitterVertexColor); // UMaterialExpressionMeshEmitterVertexColor
+IMPL_UOBJ(UMaterialExpressionMeshSubUV); // UMaterialExpressionMeshSubUV
+IMPL_UOBJ(UMaterialExpressionMeshSubUVBlend); // UMaterialExpressionMeshSubUVBlend
+IMPL_UOBJ(UMaterialExpressionMultiply); // UMaterialExpressionMultiply
+IMPL_UOBJ(UMaterialExpressionNormalize); // UMaterialExpressionNormalize
+IMPL_UOBJ(UMaterialExpressionObjectOrientation); // UMaterialExpressionObjectOrientation
+IMPL_UOBJ(UMaterialExpressionObjectRadius); // UMaterialExpressionObjectRadius
+IMPL_UOBJ(UMaterialExpressionObjectWorldPosition); // UMaterialExpressionObjectWorldPosition
+IMPL_UOBJ(UMaterialExpressionOcclusionPercentage); // UMaterialExpressionOcclusionPercentage
+IMPL_UOBJ(UMaterialExpressionOneMinus); // UMaterialExpressionOneMinus
+IMPL_UOBJ(UMaterialExpressionPanner); // UMaterialExpressionPanner
+IMPL_UOBJ(UMaterialExpressionParameter); // UMaterialExpressionParameter
+IMPL_UOBJ(UMaterialExpressionParticleMacroUV); // UMaterialExpressionParticleMacroUV
+IMPL_UOBJ(UMaterialExpressionParticleSubUV); // UMaterialExpressionParticleSubUV
+IMPL_UOBJ(UMaterialExpressionPerInstanceRandom); // UMaterialExpressionPerInstanceRandom
+IMPL_UOBJ(UMaterialExpressionPixelDepth); // UMaterialExpressionPixelDepth
+IMPL_UOBJ(UMaterialExpressionPower); // UMaterialExpressionPower
+IMPL_UOBJ(UMaterialExpressionReflectionVector); // UMaterialExpressionReflectionVector
+IMPL_UOBJ(UMaterialExpressionRotateAboutAxis); // UMaterialExpressionRotateAboutAxis
+IMPL_UOBJ(UMaterialExpressionRotator); // UMaterialExpressionRotator
+IMPL_UOBJ(UMaterialExpressionScalarParameter); // UMaterialExpressionScalarParameter
+IMPL_UOBJ(UMaterialExpressionSceneDepth); // UMaterialExpressionSceneDepth
+IMPL_UOBJ(UMaterialExpressionSceneTexture); // UMaterialExpressionSceneTexture
+IMPL_UOBJ(UMaterialExpressionScreenPosition); // UMaterialExpressionScreenPosition
+IMPL_UOBJ(UMaterialExpressionSine); // UMaterialExpressionSine
+IMPL_UOBJ(UMaterialExpressionSphereMask); // UMaterialExpressionSphereMask
+IMPL_UOBJ(UMaterialExpressionSquareRoot); // UMaterialExpressionSquareRoot
+IMPL_UOBJ(UMaterialExpressionStaticComponentMaskParameter); // UMaterialExpressionStaticComponentMaskParameter
+IMPL_UOBJ(UMaterialExpressionStaticSwitchParameter); // UMaterialExpressionStaticSwitchParameter
+IMPL_UOBJ(UMaterialExpressionSubtract); // UMaterialExpressionSubtract
+IMPL_UOBJ(UMaterialExpressionTerrainLayerCoords); // UMaterialExpressionTerrainLayerCoords
+IMPL_UOBJ(UMaterialExpressionTerrainLayerWeight); // UMaterialExpressionTerrainLayerWeight
+IMPL_UOBJ(UMaterialExpressionTextureCoordinate); // UMaterialExpressionTextureCoordinate
+IMPL_UOBJ(UMaterialExpressionTextureObject); // UMaterialExpressionTextureObject
+IMPL_UOBJ(UMaterialExpressionTextureSample); // UMaterialExpressionTextureSample
+IMPL_UOBJ(UMaterialExpressionTextureSampleParameter); // UMaterialExpressionTextureSampleParameter
+IMPL_UOBJ(UMaterialExpressionTextureSampleParameter2D); // UMaterialExpressionTextureSampleParameter2D
+IMPL_UOBJ(UMaterialExpressionTextureSampleParameterCube); // UMaterialExpressionTextureSampleParameterCube
+IMPL_UOBJ(UMaterialExpressionTextureSampleParameterMeshSubUV); // UMaterialExpressionTextureSampleParameterMeshSubUV
+IMPL_UOBJ(UMaterialExpressionTextureSampleParameterMeshSubUVBlend); // UMaterialExpressionTextureSampleParameterMeshSubUVBlend
+IMPL_UOBJ(UMaterialExpressionTextureSampleParameterMovie); // UMaterialExpressionTextureSampleParameterMovie
+IMPL_UOBJ(UMaterialExpressionTextureSampleParameterNormal); // UMaterialExpressionTextureSampleParameterNormal
+IMPL_UOBJ(UMaterialExpressionTextureSampleParameterSubUV); // UMaterialExpressionTextureSampleParameterSubUV
+IMPL_UOBJ(UMaterialExpressionTime); // UMaterialExpressionTime
+IMPL_UOBJ(UMaterialExpressionTransform); // UMaterialExpressionTransform
+IMPL_UOBJ(UMaterialExpressionTransformPosition); // UMaterialExpressionTransformPosition
+IMPL_UOBJ(UMaterialExpressionTwoSidedSign); // UMaterialExpressionTwoSidedSign
+IMPL_UOBJ(UMaterialExpressionVectorParameter); // UMaterialExpressionVectorParameter
+IMPL_UOBJ(UMaterialExpressionVertexColor); // UMaterialExpressionVertexColor
+IMPL_UOBJ(UMaterialExpressionWindDirectionAndSpeed); // UMaterialExpressionWindDirectionAndSpeed
+IMPL_UOBJ(UMaterialExpressionWorldNormal); // UMaterialExpressionWorldNormal
+IMPL_UOBJ(UMaterialExpressionWorldPosition); // UMaterialExpressionWorldPosition

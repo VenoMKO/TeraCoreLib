@@ -207,8 +207,6 @@ public:
   int32 GetPosX() const;
   int32 GetPosY() const;
 
-  static UMaterialExpression* StaticFactory(FObjectExport* exp);
-
   bool RegisterProperty(FPropertyTag* property) override;
   FString GetTitle() const;
   virtual void AcceptVisitor(UMaterialExpressionViewVisitor& visitor);

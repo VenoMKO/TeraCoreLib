@@ -17,6 +17,18 @@
 // Common UObject subclass declarations
 #define DECL_UOBJ(TClass, TSuper)\
 public:\
+  static bool __GLUE_OBJ_REF(Registered, TClass);\
+  inline friend FStream& operator<<(FStream& s, TClass*& obj) { return s << *(UObject**)&obj; }\
+  typedef TClass ThisClass;\
+  typedef TSuper Super;\
+  static const char* StaticClassName() { return ((char*)#TClass) + 1; }\
+  static UObject* StaticFactoryCtor(class FObjectExport* exp) { return new TClass(exp); }\
+  const char* GetStaticClassName() const override { return ThisClass::StaticClassName(); }\
+  std::string GetStaticClassChain() const override { return Super::GetStaticClassChain() + "." + ThisClass::StaticClassName(); }\
+  using TSuper::TSuper
+
+#define DECL_ABSTRACT_UOBJ(TClass, TSuper)\
+public:\
   inline friend FStream& operator<<(FStream& s, TClass*& obj) { return s << *(UObject**)&obj; }\
   typedef TClass ThisClass;\
   typedef TSuper Super;\
@@ -24,6 +36,10 @@ public:\
   const char* GetStaticClassName() const override { return ThisClass::StaticClassName(); }\
   std::string GetStaticClassChain() const override { return Super::GetStaticClassChain() + "." + ThisClass::StaticClassName(); }\
   using TSuper::TSuper
+
+#define IMPL_UOBJ(TClass)\
+static_assert(TRANSLATION_UNIT_VALIDATION == 1);\
+bool TClass::__GLUE_OBJ_REF(Registered, TClass) = UObjectFactory::Register(TClass::StaticClassName(), TClass::StaticFactoryCtor);
 
 // Common property helpers for faster property definition and registration
 
@@ -244,3 +260,10 @@ if (Super::RegisterProperty(property))\
   return true;\
 }\
 //
+
+#define UOBJ_FACTORY_TABLE_BEGIN(TName)\
+static const std::unordered_map<const char*, std::function<UObject*(FObjectExport*)>> TName{
+#define UOBJ_FACTORY_TABLE_END()\
+};
+#define UOBJ_FACTORY_ENTRY(TClass)\
+{ #TClass, [](FObjectExport* exp) -> UObject* { return new TClass(exp); } }
