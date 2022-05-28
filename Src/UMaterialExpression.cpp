@@ -2036,7 +2036,18 @@ void UMaterialExpressionMaterialFunctionCall::AcceptVisitor(UMaterialExpressionV
     inputs.emplace_back(i.Output);
   }
   visitor.SetOutput(inputs);
-  visitor.SetTitle("MFCall: " + MaterialFunction->GetObjectNameString());
+  if (MaterialFunction)
+  {
+    visitor.SetTitle("MFCall: " + MaterialFunction->GetObjectNameString());
+  }
+  else if (Function)
+  {
+    visitor.SetTitle("FCall: " + Function->GetObjectNameString());
+  }
+  else
+  {
+    visitor.SetTitle("MFCall: None");
+  }
 }
 
 bool UMaterialExpressionTextureObject::RegisterProperty(FPropertyTag* property)
