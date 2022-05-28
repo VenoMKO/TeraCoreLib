@@ -484,11 +484,11 @@ bool TextureProcessor::BytesToFile()
     {
       uint8* SrcPtr = (uint8*)ohandler.Mips[0].Data;
       SeparateAlphaChannel = (uint8*)malloc(ohandler.Mips[0].SizeX * ohandler.Mips[0].SizeY);
-      for (int x = 0; x < ohandler.Mips[0].SizeX; ++x)
+      for (int y = 0; y < ohandler.Mips[0].SizeY; ++y)
       {
-        for (int y = 0; y < ohandler.Mips[0].SizeY; ++y)
+        for (int x = 0; x < ohandler.Mips[0].SizeX; ++x)
         {
-          SeparateAlphaChannel[x * ohandler.Mips[0].SizeX + y] = SrcPtr[(x * ohandler.Mips[0].SizeX + y) * sizeof(uint32) + 3];
+          SeparateAlphaChannel[y * ohandler.Mips[0].SizeY + x] = SrcPtr[(y * ohandler.Mips[0].SizeY + x) * sizeof(uint32) + 3];
         }
       }
     }
