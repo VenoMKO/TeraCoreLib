@@ -8,9 +8,13 @@ class ULandscapeProxy : public UActor {
 public:
   DECL_UOBJ(ULandscapeProxy, UActor);
 
+  UPROP(UMaterialInterface*, LandscapeMaterial, nullptr);
+
   std::map<FString, UMaterialInterface*> MaterialInstanceConstantMap;
 
   void Serialize(FStream& s) override;
+
+  bool RegisterProperty(FPropertyTag* property) override;
 };
 
 class ULandscapeLayerInfoObject : public UObject {
@@ -25,6 +29,7 @@ public:
 struct LandscapeLayerStruct {
   FName LayerName;
   ULandscapeLayerInfoObject* LayerInfoObj = nullptr;
+  UMaterialInterface* OverrideMaterial = nullptr;
   void LoadFromPropertyValue(FPropertyValue* v);
 };
 
@@ -37,12 +42,17 @@ public:
   UPROP(int32, NumSubsections, 0);
   UPROP_NOINIT(std::vector<class ULandscapeComponent*>, LandscapeComponents);
   UPROP_NOINIT(std::vector<LandscapeLayerStruct>, LayerInfoObjs);
+  UPROP_NOINIT(std::vector<LandscapeLayerStruct>, OverrideLayerInfoObjs);
+
+  std::vector<LandscapeLayerStruct> Layers;
 
   bool RegisterProperty(FPropertyTag* property) override;
 
   void GetHeightMapData(struct UTextureBitmapInfo& data) const;
 
   void GetWeighMapData(const FName& layer, struct UTextureBitmapInfo& data) const;
+
+  void PostLoad() override;
 };
 
 struct FWeightMapLayerAllocationInfo {

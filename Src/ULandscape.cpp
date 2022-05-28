@@ -11,6 +11,13 @@ void ULandscapeProxy::Serialize(FStream& s)
   s << MaterialInstanceConstantMap;
 }
 
+bool ULandscapeProxy::RegisterProperty(FPropertyTag* property)
+{
+  SUPER_REGISTER_PROP();
+  REGISTER_TOBJ_PROP(LandscapeMaterial, UMaterialInterface*);
+  return false;
+}
+
 bool ULandscapeComponent::RegisterProperty(FPropertyTag* property)
 {
   SUPER_REGISTER_PROP();
@@ -170,6 +177,15 @@ bool ULandscape::RegisterProperty(FPropertyTag* property)
     }
     return true;
   }
+  if (PROP_IS(property, OverrideLayerInfoObjs))
+  {
+    OverrideLayerInfoObjsProperty = property;
+    for (FPropertyValue* v : property->GetArray())
+    {
+      OverrideLayerInfoObjs.emplace_back().LoadFromPropertyValue(v);
+    }
+    return true;
+  }
   return false;
 }
 
@@ -299,6 +315,29 @@ void LandscapeLayerStruct::LoadFromPropertyValue(FPropertyValue* value)
     else if (v->GetPropertyTagPtr()->Name == "LayerInfoObj")
     {
       LayerInfoObj = Cast<ULandscapeLayerInfoObject>(v->GetPropertyTagPtr()->GetObjectValuePtr());
+    }
+    else if (v->GetPropertyTagPtr()->Name == "OverrideMaterial")
+    {
+      OverrideMaterial = Cast<UMaterialInterface>(v->GetPropertyTagPtr()->GetObjectValuePtr());
+    }
+  }
+}
+
+void ULandscape::PostLoad()
+{
+  Super::PostLoad();
+  Layers.resize(LayerInfoObjs.size());
+  for (int32 idx = 0; idx < LayerInfoObjs.size(); ++idx)
+  {
+    Layers[idx].LayerName = LayerInfoObjs[idx].LayerName.GetIndex() >= 0 ? LayerInfoObjs[idx].LayerName : LayerInfoObjs[idx].LayerInfoObj ? LayerInfoObjs[idx].LayerInfoObj->LayerName : FName();
+    Layers[idx].OverrideMaterial = LandscapeMaterial;
+    for (const auto& l : OverrideLayerInfoObjs)
+    {
+      if (l.LayerName == LayerInfoObjs[idx].LayerName)
+      {
+        Layers[idx].OverrideMaterial = l.OverrideMaterial;
+        break;
+      }
     }
   }
 }
