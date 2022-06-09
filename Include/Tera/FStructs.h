@@ -611,6 +611,12 @@ struct FSHA
     return Bytes;
   }
 
+  FString GetString() const
+  {
+    const uint32* BytesPtr = (const uint32*)Bytes;
+    return FString::Sprintf("%08X%08X%08X%08X%08X", BytesPtr[0], BytesPtr[1], BytesPtr[2], BytesPtr[3], BytesPtr[4]);
+  }
+
   friend FStream& operator<<(FStream& s, FSHA& i);
 
 protected:
