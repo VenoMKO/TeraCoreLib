@@ -36,6 +36,21 @@ public:
     return FilenameToCookedVersion;
   }
 
+  std::unordered_map<FString, FSHA> GetFilenameToScriptSHA() const
+  {
+    return FilenameToScriptSHA;
+  }
+
+  std::unordered_map<FString, double> GetFilenameToTimeMap() const
+  {
+    return FilenameToTimeMap;
+  }
+
+  std::unordered_map<FString, std::map<FString, std::vector<FPacakgeTreeEntry>>> GetLocalizationMap() const
+  {
+    return LocalizationMap;
+  }
+
 protected:
   FILE_OFFSET GetCookedBulkDataInfoMapOffset(FStream& s);
 
