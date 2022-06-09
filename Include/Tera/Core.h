@@ -76,7 +76,7 @@
 #define ALLOW_LATEST_UDK 0
 
 // Allows Astellia files
-#define IS_ASTELLIA_BUILD 1
+#define IS_ASTELLIA_BUILD 0
 
 // Allow Blade and Soul files
 #define IS_BNS_BUILD 0
@@ -125,6 +125,7 @@ FString PixelFormatToString(uint32 pf);
 FString PackageFlagsToString(uint32 flags);
 FString ClassFlagsToString(uint32 flags);
 FString TextureCompressionSettingsToString(uint8 flags);
+FString BulkDataFlagsToString(uint32 flags);
 
 // Check if the CPU has AVX2 instructions set. Mandatory for TGA and PNG export/import
 bool HasAVX2();

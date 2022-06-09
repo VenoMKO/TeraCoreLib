@@ -721,11 +721,11 @@ public:
     }
   }
 
-  FString GetString();
+  FString GetString() const;
 
-  FString GetString(FStream& s);
+  FString GetString(FStream& s) const;
 
-  FString* Cached = nullptr;
+  mutable FString* Cached = nullptr;
   FILE_OFFSET Size = -1;
   FILE_OFFSET Offset = -1;
   FPackage* Package = nullptr;

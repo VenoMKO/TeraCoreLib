@@ -1246,6 +1246,62 @@ FString TextureCompressionSettingsToString(uint8 flags)
   return result;
 }
 
+FString BulkDataFlagsToString(uint32 flags)
+{
+  if (flags == 0)
+  {
+    return "None";
+  }
+  std::vector<FString> items;
+  if (flags & BULKDATA_SerializeCompressedLZO)
+  {
+    items.emplace_back("SerializeCompressedLZO");
+  }
+  if (flags & BULKDATA_SerializeCompressedLZX)
+  {
+    items.emplace_back("SerializeCompressedLZX");
+  }
+  if (flags & BULKDATA_SerializeCompressedZLIB)
+  {
+    items.emplace_back("SerializeCompressedZLIB");
+  }
+  if (flags & BULKDATA_StoreInSeparateFile)
+  {
+    items.emplace_back("StoreInSeparateFile");
+  }
+  if (flags & BULKDATA_ForceSingleElementSerialization)
+  {
+    items.emplace_back("ForceSingleElementSerialization");
+  }
+  if (flags & BULKDATA_SingleUse)
+  {
+    items.emplace_back("SingleUse");
+  }
+  if (flags & BULKDATA_Unused)
+  {
+    items.emplace_back("Unused");
+  }
+  if (flags & BULKDATA_StoreOnlyPayload)
+  {
+    items.emplace_back("StoreOnlyPayload");
+  }
+  if (items.empty())
+  {
+    DBreak();
+    return "None";
+  }
+  FString r;
+  for (size_t idx = 0; idx < items.size(); ++idx)
+  {
+    r += items[idx];
+    if (idx + 1 < items.size())
+    {
+      r += ',';
+    }
+  }
+  return r;
+}
+
 float USRand()
 {
   GSRandSeed = (GSRandSeed * 196314165) + 907633515;

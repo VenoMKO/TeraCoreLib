@@ -11,6 +11,31 @@ public:
 
   void Serialize(FStream& s) override;
 
+  std::unordered_map<FString, std::vector<FPacakgeTreeEntry>> GetClassMap() const
+  {
+    return ClassMap;
+  }
+
+  std::unordered_map<FString, FCookedBulkDataInfo> GetCookedBulkDataInfoMap() const
+  {
+    return CookedBulkDataInfoMap;
+  }
+
+  std::unordered_map<FString, FCookedTextureFileCacheInfo> GetCookedTextureFileCacheInfoMap() const
+  {
+    return CookedTextureFileCacheInfoMap;
+  }
+
+  std::unordered_map<FString, FCookedTextureUsageInfo> GetTextureUsageInfos() const
+  {
+    return TextureUsageInfos;
+  }
+
+  std::unordered_map<FString, int32> GetFilenameToCookedVersion() const
+  {
+    return FilenameToCookedVersion;
+  }
+
 protected:
   FILE_OFFSET GetCookedBulkDataInfoMapOffset(FStream& s);
 

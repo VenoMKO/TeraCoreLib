@@ -2,14 +2,14 @@
 #include "Tera/FStream.h"
 #include "Tera/FPackage.h"
 
-FString FStringRef::GetString()
+FString FStringRef::GetString() const
 {
   FReadStream s(Package->GetDataPath());
   s.SetPackage(Package);
   return GetString(s);
 }
 
-FString FStringRef::GetString(FStream& s)
+FString FStringRef::GetString(FStream& s) const
 {
   if (!Cached)
   {
