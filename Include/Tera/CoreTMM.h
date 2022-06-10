@@ -6,10 +6,16 @@ extern const char* TMM_ModPrefix;
 extern const char* TMM_ConfigName;
 extern const char* TMM_GameConfigName;
 
+// Last WorldTextures TFC index used by the client
+#define TMM_TFC_INDEX_NATIVE_END 99
+// First WorldTextures TFC index to use by TMM
 #define TMM_TFC_INDEX_MIN 500
+// Last WorldTextures TFC index to use by TMM
 #define TMM_TFC_INDEX_MAX 899
-
-#define TMM_MAX_CONTAINER_SIZE 204800
+// Max TFC size in bytes
+#define TMM_MAX_TFC_SIZE 0x10000000
+// Max composite GPK container size in bytes
+#define TMM_MAX_CONTAINER_SIZE 0x8000000
 
 // Get TMM version
 void GetTmmVersion(int32& major, int32& minor);
