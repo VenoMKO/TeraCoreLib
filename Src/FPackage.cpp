@@ -724,7 +724,6 @@ FPackage::S1DirError FPackage::ValidateRootDirCandidate(const FString& s1game)
   }
   std::vector<FString> classPackages = ClassPackages(true, true);
   std::vector<FString> extraClassPacakges = ClassPackages(false, false);
-  classPackages.insert(classPackages.end(), extraClassPacakges.begin(), extraClassPacakges.end());
 #if IS_ASTELLIA_BUILD
   const std::filesystem::path scriptsDir = std::filesystem::path(s1game.WString()) / "Script";
 #else
@@ -743,6 +742,13 @@ FPackage::S1DirError FPackage::ValidateRootDirCandidate(const FString& s1game)
     {
       LogE("Error! %s was not found in the %s folder.", name.UTF8().c_str(), GameRootDir);
       return S1DirError::CLASSES_NOT_FOUND;
+    }
+  }
+  for (const FString& name : extraClassPacakges)
+  {
+    if (!std::filesystem::exists(scriptsDir / name.WString()))
+    {
+      LogE("Warning! %s was not found in the %s folder.", name.UTF8().c_str(), GameRootDir);
     }
   }
   std::filesystem::path testWritePermissionsFile = root / "re.tmp";
@@ -779,7 +785,7 @@ std::vector<FString> FPackage::ClassPackages(bool core, bool minimal)
   const char* extra[] = { "UnrealEd.u", "NSEditor.u", "GFxUIEditor.u", "WinDrv.u", "IpDrv.u", "OnlineSubsystemPC.u", "OnlineSubsystemLive.u", "OnlineSubsystemGameSpy.u", "OnlineSubsystemSteamworks.u" };
 #else
   const char* required[] = { "Engine.u", "GameFramework.u", "S1Game.u", "GFxUI.u" };
-  const char* extra[] = { "UnrealEd.u", "GFxUIEditor.u", "WinDrv.u", "IpDrv.u", "OnlineSubsystemPC.u" };
+  const char* extra[] = { "UnrealEd.u", "GFxUIEditor.u", "WinDrv.u", "IpDrv.u", "OnlineSubsystemPC.u", "GodHand.u", "UnrealScriptTest.u" };
 #endif
 
   if (minimal)
